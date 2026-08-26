@@ -1,0 +1,530 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  OFFICE
+  TECHNICIAN
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum PreferredContactMethod {
+  PHONE
+  EMAIL
+  TEXT
+}
+
+enum JobStatus {
+  NEW
+  NEEDS_SCHEDULING
+  SCHEDULED
+  EN_ROUTE
+  ON_SITE
+  IN_PROGRESS
+  AWAITING_PARTS
+  COMPLETED
+  CANCELLED
+  INVOICED
+  PAID
+}
+
+enum JobPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  roles        UserRole[]
+  phone        String?
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  assignedJobs JobTechnician[]
+  auditLogs    AuditLog[]
+  timeEntries  TimeEntry[]
+
+  @@map("users")
+}
+
+model Customer {
+  id                     String                  @id @default(uuid())
+  firstName              String
+  lastName               String
+  companyName            String?
+  phone                  String?
+  mobilePhone             String?
+  email                  String?
+  preferredContactMethod PreferredContactMethod  @default(PHONE)
+  notes                  String?
+  billingAddressLine1    String?
+  billingAddressLine2    String?
+  billingCity            String?
+  billingState           String?
+  billingZip             String?
+  status                 CustomerStatus          @default(ACTIVE)
+  tags                   String[]                @default([])
+  portalEnabled          Boolean                 @default(false)
+  portalPasswordHash     String?
+  portalInviteToken      String?                 @unique
+  portalInviteExpires    DateTime?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+
+  properties Property[]
+  jobs       Job[]
+  estimates  Estimate[]
+  invoices   Invoice[]
+  messages   CustomerMessage[]
+  documents  CustomerDocument[]
+
+  @@index([lastName, firstName])
+  @@map("customers")
+}
+
+model Property {
+  id             String   @id @default(uuid())
+  customerId     String
+  label          String   // e.g. "Main House", "Rental Property", "Commercial Shop"
+  addressLine1   String
+  addressLine2   String?
+  unit           String?
+  city           String
+  state          String
+  zip            String
+  latitude       Float?
+  longitude      Float?
+  notes          String?
+  accessInstructions String?
+  gateCode       String?
+  hasPets        Boolean  @default(false)
+  petNotes       String?
+  entryInstructions String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  jobs     Job[]
+  estimates Estimate[]
+  invoices  Invoice[]
+
+  @@index([customerId])
+  @@map("properties")
+}
+
+enum RecurrenceInterval {
+  NONE
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUALLY
+  ANNUALLY
+}
+
+model Job {
+  id                  String      @id @default(uuid())
+  jobNumber           String      @unique
+  customerId          String
+  propertyId          String
+  title               String
+  description         String?
+  problemRequest       String?
+  priority            JobPriority @default(NORMAL)
+  status              JobStatus   @default(NEW)
+  scheduledDate       DateTime?
+  startTime           DateTime?
+  endTime             DateTime?
+  estimatedDurationMin Int?
+  internalNotes       String?
+  customerVisibleNotes String?
+  recurrenceInterval  RecurrenceInterval @default(NONE)
+  nextRecurrenceDate  DateTime?
+  reminderSentAt      DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  customer     Customer        @relation(fields: [customerId], references: [id])
+  property     Property        @relation(fields: [propertyId], references: [id])
+  technicians  JobTechnician[]
+  photos       JobPhoto[]
+  materials    JobMaterial[]
+  timeEntries  TimeEntry[]
+  statusHistory JobStatusHistory[]
+  signatures   Signature[]
+  estimates    Estimate[]
+  invoices     Invoice[]
+
+  @@index([customerId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@map("jobs")
+}
+
+model JobTechnician {
+  id         String   @id @default(uuid())
+  jobId      String
+  userId     String
+  assignedAt DateTime @default(now())
+
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([jobId, userId])
+  @@map("job_technicians")
+}
+
+model JobStatusHistory {
+  id        String    @id @default(uuid())
+  jobId     String
+  status    JobStatus
+  changedBy String?
+  changedAt DateTime  @default(now())
+  note      String?
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_status_history")
+}
+
+// Defined now so Phase 2 (photos) and Phase 3 (materials/labor) can be
+// added without further schema churn. Not exposed via API until their phase.
+
+model JobPhoto {
+  id           String   @id @default(uuid())
+  jobId        String
+  storageKey   String
+  category     String   @default("general") // before | during | after | general
+  uploadedById String?
+  uploadedAt   DateTime @default(now())
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_photos")
+}
+
+model JobMaterial {
+  id          String  @id @default(uuid())
+  jobId       String
+  name        String
+  sku         String?
+  description String?
+  cost        Decimal @db.Decimal(10, 2)
+  salePrice   Decimal @db.Decimal(10, 2)
+  taxable     Boolean @default(true)
+  quantity    Decimal @db.Decimal(10, 2) @default(1)
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_materials")
+}
+
+model TimeEntry {
+  id        String    @id @default(uuid())
+  jobId     String
+  userId    String
+  startedAt DateTime
+  endedAt   DateTime?
+  notes     String?
+
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("time_entries")
+}
+
+enum SignatureType {
+  ESTIMATE_APPROVAL
+  WORK_COMPLETION
+  CUSTOMER_AUTHORIZATION
+  INVOICE_ACKNOWLEDGEMENT
+}
+
+model Signature {
+  id         String        @id @default(uuid())
+  jobId      String
+  type       SignatureType
+  signerName String
+  imageData  String        // base64-encoded PNG of the drawn signature
+  ipAddress  String?
+  signedAt   DateTime      @default(now())
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("signatures")
+}
+
+enum EstimateStatus {
+  DRAFT
+  SENT
+  VIEWED
+  APPROVED
+  DECLINED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  CHECK
+  CARD
+  ACH
+  OTHER
+}
+
+model Estimate {
+  id             String         @id @default(uuid())
+  estimateNumber String         @unique
+  customerId     String
+  propertyId     String
+  jobId          String?
+  status         EstimateStatus @default(DRAFT)
+  date           DateTime       @default(now())
+  expirationDate DateTime?
+  taxRate        Decimal        @db.Decimal(5, 2) @default(0)
+  discount       Decimal        @db.Decimal(10, 2) @default(0)
+  notes          String?
+  terms          String?
+  sentAt         DateTime?
+  viewedAt       DateTime?
+  approvedAt     DateTime?
+  approvedByName String?
+  approvalIp     String?
+  declinedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  customer Customer       @relation(fields: [customerId], references: [id])
+  property Property       @relation(fields: [propertyId], references: [id])
+  job      Job?           @relation(fields: [jobId], references: [id])
+  items    EstimateItem[]
+  invoices Invoice[]
+
+  @@index([customerId])
+  @@index([jobId])
+  @@index([status])
+  @@map("estimates")
+}
+
+model EstimateItem {
+  id          String  @id @default(uuid())
+  estimateId  String
+  description String
+  quantity    Decimal @db.Decimal(10, 2) @default(1)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  taxable     Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+
+  @@map("estimate_items")
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  customerId    String
+  propertyId    String
+  jobId         String?
+  estimateId    String?
+  status        InvoiceStatus @default(DRAFT)
+  date          DateTime      @default(now())
+  dueDate       DateTime?
+  taxRate       Decimal       @db.Decimal(5, 2) @default(0)
+  discount      Decimal       @db.Decimal(10, 2) @default(0)
+  notes         String?
+  terms         String?
+  sentAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  customer Customer      @relation(fields: [customerId], references: [id])
+  property Property      @relation(fields: [propertyId], references: [id])
+  job      Job?          @relation(fields: [jobId], references: [id])
+  estimate Estimate?     @relation(fields: [estimateId], references: [id])
+  items    InvoiceItem[]
+  payments Payment[]
+
+  @@index([customerId])
+  @@index([jobId])
+  @@index([estimateId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  invoiceId   String
+  description String
+  quantity    Decimal @db.Decimal(10, 2) @default(1)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  taxable     Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  invoiceId     String
+  method        PaymentMethod
+  amount        Decimal       @db.Decimal(10, 2)
+  paidAt        DateTime      @default(now())
+  notes         String?
+  recordedById  String?
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model AppSettings {
+  id                  String   @id @default("singleton")
+  companyName         String   @default("Your Company Name")
+  companyAddress      String?
+  companyPhone        String?
+  companyEmail        String?
+  defaultLaborRate    Decimal  @db.Decimal(10, 2) @default(85)
+  defaultTaxRate      Decimal  @db.Decimal(5, 2) @default(0)
+  jobNumberPrefix     String   @default("JOB")
+  estimateNumberPrefix String  @default("EST")
+  invoiceNumberPrefix String   @default("INV")
+  autoSendReminders   Boolean  @default(false)
+  reminderHoursBefore Int      @default(24)
+  updatedAt           DateTime @updatedAt
+
+  @@map("app_settings")
+}
+
+model PriceBookItem {
+  id          String   @id @default(uuid())
+  name        String
+  sku         String?
+  description String?
+  cost        Decimal  @db.Decimal(10, 2) @default(0)
+  salePrice   Decimal  @db.Decimal(10, 2)
+  taxable     Boolean  @default(true)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
+  @@map("price_book_items")
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+}
+
+enum NotificationStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  name      String
+  subject   String
+  bodyHtml  String
+  bodyText  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model NotificationLog {
+  id          String              @id @default(uuid())
+  channel     NotificationChannel
+  templateKey String?
+  recipient   String
+  subject     String?
+  body        String
+  status      NotificationStatus
+  error       String?
+  relatedType String?
+  relatedId   String?
+  createdAt   DateTime            @default(now())
+
+  @@index([relatedType, relatedId])
+  @@index([createdAt])
+  @@map("notification_logs")
+}
+
+model CustomerMessage {
+  id           String   @id @default(uuid())
+  customerId   String
+  jobId        String?
+  fromCustomer Boolean
+  body         String
+  createdAt    DateTime @default(now())
+  readAt       DateTime?
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_messages")
+}
+
+model CustomerDocument {
+  id         String   @id @default(uuid())
+  customerId String
+  jobId      String?
+  fileName   String
+  storageKey String
+  uploadedAt DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_documents")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
