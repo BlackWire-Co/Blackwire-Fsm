@@ -1,3 +1,5 @@
+
+
 # BlackWire FSM 
 
 A self-hosted field service management app for small electrical/HVAC/plumbing/handyman
@@ -400,4 +402,8 @@ a real processor later.
   original spec) hasn't been built.
 - Multi-currency, multi-location, and membership/service-agreement features from the
   original "Future Architecture" list remain unbuilt
-  
+  ## ☕ Support the Project
+
+If you find this project useful and want to support its development, you can buy me a coffee!
+
+[☕ Buy Me a Coffee](https://buymeacoffee.com/blackwireco)
