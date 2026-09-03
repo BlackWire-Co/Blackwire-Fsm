@@ -191,7 +191,7 @@ router.patch("/:id", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: A
   const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
   if (!existing) return res.status(404).json({ error: "Invoice not found" });
   if (existing.status !== InvoiceStatus.DRAFT) {
-    return res.status(400).json({ error: "Only draft invoices can be edited" });
+    return res.status(400).json({ error: "Only draft invoices can be edited. Use PATCH /:id/notes to edit notes or terms on a sent/paid invoice." });
   }
 
   const { items, ...rest } = parsed.data;
@@ -207,6 +207,32 @@ router.patch("/:id", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: A
   });
 
   await logAudit({ userId: req.user!.id, action: "invoice.modified", entityType: "invoice", entityId: invoice.id });
+  res.json(withTotals(invoice));
+});
+
+// Notes and terms are free text, not part of the accounting math (unlike
+// line items, tax rate, or discount), so — unlike the line-item edit above
+// — they stay editable regardless of status. A sent or even paid invoice's
+// numbers are locked in, but a typo in the notes or a terms update
+// shouldn't require voiding and reissuing the whole document. Blocked only
+// on VOID, since that's meant to be a dead record.
+const notesSchema = z.object({
+  notes: z.string().max(4000).optional(),
+  terms: z.string().max(4000).optional(),
+});
+
+router.patch("/:id/notes", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: AuthedRequest, res) => {
+  const parsed = notesSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+  if (!existing) return res.status(404).json({ error: "Invoice not found" });
+  if (existing.status === InvoiceStatus.VOID) {
+    return res.status(400).json({ error: "Voided invoices can't be edited." });
+  }
+
+  const invoice = await prisma.invoice.update({ where: { id: req.params.id }, data: parsed.data, include });
+  await logAudit({ userId: req.user!.id, action: "invoice.notes_modified", entityType: "invoice", entityId: invoice.id });
   res.json(withTotals(invoice));
 });
 

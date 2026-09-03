@@ -90,10 +90,12 @@ export default function Dashboard() {
           <h3>Upcoming Jobs</h3>
           <div className="stat-value">{data.upcomingJobs.length}</div>
           {data.upcomingJobs.slice(0, 4).map((job) => (
-            <div key={job.id} className="job-row" style={{ fontSize: 13 }}>
-              <div style={{ flex: 1 }}>{job.title}</div>
-              <div className="who">{new Date(job.scheduledDate).toLocaleDateString()}</div>
-            </div>
+            <Link key={job.id} to={`/jobs/${job.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <div className="job-row" style={{ fontSize: 13 }}>
+                <div style={{ flex: 1 }}>{job.title}</div>
+                <div className="who">{new Date(job.scheduledDate).toLocaleDateString()}</div>
+              </div>
+            </Link>
           ))}
         </div>
 

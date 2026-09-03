@@ -18,6 +18,12 @@ const ALL_STATUSES = [
   "AWAITING_PARTS", "COMPLETED", "CANCELLED", "INVOICED", "PAID",
 ];
 
+// Statuses where the job is effectively done — used only to pick a better
+// label than "Not yet scheduled" when a finished job never had a
+// scheduledDate set (e.g. it was worked and completed same-day without
+// ever going through the Schedule page first).
+const FINISHED_STATUSES = ["COMPLETED", "INVOICED", "PAID", "CANCELLED"];
+
 export default function JobDetail() {
   const { id } = useParams();
   const { user, hasRole } = useAuth();
@@ -142,6 +148,25 @@ export default function JobDetail() {
       )}`
     : undefined;
 
+  // "Scheduled: Not yet scheduled" used to show even on a job that was
+  // already completed/invoiced/paid without ever going through the
+  // Schedule page — reading as if the job was still pending. When the job
+  // is finished and has no scheduledDate, show when it was actually
+  // completed instead (pulled from status history) rather than a label
+  // that implies nothing has happened yet.
+  const isFinished = FINISHED_STATUSES.includes(job.status);
+  const completedEntry = job.statusHistory?.find((h: any) => h.status === "COMPLETED");
+  let scheduledLabel: string;
+  if (job.scheduledDate) {
+    scheduledLabel = new Date(job.scheduledDate).toLocaleString();
+  } else if (isFinished) {
+    scheduledLabel = completedEntry
+      ? `No date was ever scheduled — completed ${new Date(completedEntry.changedAt).toLocaleString()}`
+      : "No date was ever scheduled (job is finished)";
+  } else {
+    scheduledLabel = "Not yet scheduled";
+  }
+
   return (
     <div>
       <Link className="link-back" to="/jobs">← All jobs</Link>
@@ -188,7 +213,7 @@ export default function JobDetail() {
           <h3>Job Details</h3>
           <p>{job.description || "No description provided."}</p>
           <p className="who">
-            Scheduled: {job.scheduledDate ? new Date(job.scheduledDate).toLocaleString() : "Not yet scheduled"}
+            Scheduled: {scheduledLabel}
           </p>
           <p className="who">
             Technician(s): {job.technicians?.map((t: any) => `${t.user.firstName} ${t.user.lastName}`).join(", ") || "Unassigned"}

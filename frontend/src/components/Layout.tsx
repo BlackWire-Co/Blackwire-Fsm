@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../api/client";
+import { loadCustomCss } from "../customCss";
 import ThemeToggle from "./ThemeToggle";
 
 // Grouped instead of one flat 13-item list, so the sidebar reads as
@@ -52,6 +54,11 @@ export default function Layout() {
   // Close the mobile drawer automatically whenever the route changes, so
   // tapping a link doesn't leave the overlay open behind the new page.
   useEffect(() => { setNavOpen(false); }, [location.pathname]);
+
+  // Applies whatever custom CSS override an admin has saved in Settings.
+  // Runs once per full load of the staff app (Settings itself re-applies
+  // immediately on save, so a change is visible without a reload).
+  useEffect(() => { loadCustomCss(api); }, []);
 
   return (
     <div className="app-shell">

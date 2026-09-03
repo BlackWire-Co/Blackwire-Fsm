@@ -12,6 +12,11 @@ export default function Jobs() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [technicians, setTechnicians] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState("");
+  // Defaults to "recent" (newest created first) so opening the Jobs page
+  // shows what you've been working on lately instead of the oldest
+  // scheduled job in the system. "Scheduled" gets back the original
+  // upcoming-queue ordering for anyone who wants that view instead.
+  const [sort, setSort] = useState("recent");
   const [searchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(Boolean(searchParams.get("newFor")));
   const [saving, setSaving] = useState(false);
@@ -28,13 +33,13 @@ export default function Jobs() {
   const selectedCustomer = customers.find((c) => c.id === form.customerId);
 
   function loadJobs(pageNum = page) {
-    api(`/jobs?page=${pageNum}&pageSize=${pageSize}${statusFilter ? `&status=${statusFilter}` : ""}`).then((res: any) => {
+    api(`/jobs?page=${pageNum}&pageSize=${pageSize}&sort=${sort}${statusFilter ? `&status=${statusFilter}` : ""}`).then((res: any) => {
       setJobs(res.items);
       setTotal(res.total);
     });
   }
 
-  useEffect(() => { setPage(1); loadJobs(1); }, [statusFilter]);
+  useEffect(() => { setPage(1); loadJobs(1); }, [statusFilter, sort]);
   useEffect(() => { loadJobs(page); }, [page]);
   useEffect(() => {
     api("/customers?pageSize=500").then((res: any) => setCustomers(res.items));
@@ -84,6 +89,11 @@ export default function Jobs() {
           <div className="sub">{total} total</div>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} style={{ width: 170 }}>
+            <option value="recent">Most Recent</option>
+            <option value="scheduled">Scheduled Date</option>
+            <option value="oldest">Oldest First</option>
+          </select>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ width: 180 }}>
             <option value="">All statuses</option>
             <option value="NEW,NEEDS_SCHEDULING">Needs scheduling</option>

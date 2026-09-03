@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "../api/client";
+import { applyCustomCss } from "../customCss";
 
 export default function Settings() {
   const [form, setForm] = useState<any>(null);
@@ -29,9 +30,11 @@ export default function Settings() {
           invoiceNumberPrefix: form.invoiceNumberPrefix,
           autoSendReminders: form.autoSendReminders,
           reminderHoursBefore: Number(form.reminderHoursBefore),
+          customCss: form.customCss || "",
         },
       });
       setForm(updated);
+      applyCustomCss(updated.customCss || "");
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } finally {
@@ -126,6 +129,22 @@ export default function Settings() {
               <input type="number" min="1" max="168" value={form.reminderHoursBefore} onChange={(e) => setForm({ ...form, reminderHoursBefore: e.target.value })} />
             </div>
           )}
+        </div>
+
+        <div className="card" style={{ marginBottom: 16 }}>
+          <h3>Advanced: Custom CSS</h3>
+          <p className="who" style={{ marginBottom: 10 }}>
+            Paste CSS here to tweak how the app looks — colors, spacing, hover effects, anything you want overridden.
+            It applies across the whole staff app (not the customer portal) for every user, right after you save.
+            Leave blank to use the default styling. This isn't validated — a typo just won't do anything; it won't break the app.
+          </p>
+          <textarea
+            rows={10}
+            style={{ fontFamily: "var(--font-mono)", fontSize: 13 }}
+            placeholder={".job-row:hover { background: #222; }"}
+            value={form.customCss || ""}
+            onChange={(e) => setForm({ ...form, customCss: e.target.value })}
+          />
         </div>
 
         <button className="btn primary" type="submit" disabled={saving}>{saving ? "Saving…" : "Save Settings"}</button>

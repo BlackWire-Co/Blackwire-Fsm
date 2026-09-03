@@ -23,6 +23,7 @@ import portalAuthRoutes from "./routes/portalAuth";
 import portalRoutes from "./routes/portal";
 import messagesInboxRoutes from "./routes/messagesInbox";
 import settingsRoutes from "./routes/settings";
+import themeRoutes from "./routes/theme";
 import reportsRoutes from "./routes/reports";
 import { ensureBucket } from "./lib/storage";
 import { ensureDefaultTemplates } from "./lib/templates";
@@ -71,6 +72,7 @@ export function createApp() {
   app.use("/api/notification-log", notificationLogRoutes);
   app.use("/api/messages-inbox", messagesInboxRoutes);
   app.use("/api/settings", settingsRoutes);
+  app.use("/api/theme", themeRoutes);
   app.use("/api/reports", reportsRoutes);
   app.use("/api/portal/auth", portalAuthRoutes);
   app.use("/api/portal", portalRoutes);

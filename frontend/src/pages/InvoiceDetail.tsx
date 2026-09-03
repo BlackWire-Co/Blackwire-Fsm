@@ -17,6 +17,10 @@ export default function InvoiceDetail() {
   const [priceBook, setPriceBook] = useState<any[]>([]);
   const canManage = hasRole("ADMIN", "OFFICE");
 
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [notesForm, setNotesForm] = useState({ notes: "", terms: "" });
+  const [savingNotes, setSavingNotes] = useState(false);
+
   useEffect(() => { api("/pricebook?pageSize=500").then((res: any) => setPriceBook(res.items)).catch(() => setPriceBook([])); }, []);
 
   function load() {
@@ -79,6 +83,26 @@ export default function InvoiceDetail() {
       load();
     } finally { setBusy(false); }
   }
+
+  function startEditNotes() {
+    setNotesForm({ notes: invoice.notes || "", terms: invoice.terms || "" });
+    setEditingNotes(true);
+  }
+
+  async function saveNotes(e: FormEvent) {
+    e.preventDefault();
+    setSavingNotes(true);
+    try {
+      await api(`/invoices/${id}/notes`, { method: "PATCH", body: notesForm });
+      setEditingNotes(false);
+      load();
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setSavingNotes(false);
+    }
+  }
+
   async function recordPayment(e: FormEvent) {
     e.preventDefault();
     if (!payment.amount) return;
@@ -174,6 +198,40 @@ export default function InvoiceDetail() {
           )}
         </div>
       )}
+
+      {/* Notes/terms are free text, not part of the invoice's accounting
+          math, so — unlike line items above — they stay editable no matter
+          the status (sent, paid, whatever), right up until the invoice is
+          voided. */}
+      <div className="card" style={{ marginTop: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <h3 style={{ margin: 0 }}>Notes &amp; Terms</h3>
+          {canManage && !editingNotes && invoice.status !== "VOID" && (
+            <button className="btn ghost" onClick={startEditNotes}>Edit</button>
+          )}
+        </div>
+        {editingNotes ? (
+          <form onSubmit={saveNotes}>
+            <div className="field">
+              <label>Notes (visible to customer on the PDF)</label>
+              <textarea rows={3} value={notesForm.notes} onChange={(e) => setNotesForm({ ...notesForm, notes: e.target.value })} />
+            </div>
+            <div className="field">
+              <label>Terms</label>
+              <textarea rows={3} value={notesForm.terms} onChange={(e) => setNotesForm({ ...notesForm, terms: e.target.value })} />
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn primary" type="submit" disabled={savingNotes}>{savingNotes ? "Saving…" : "Save"}</button>
+              <button className="btn ghost" type="button" onClick={() => setEditingNotes(false)}>Cancel</button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <p className="who" style={{ marginBottom: invoice.terms ? 10 : 0 }}>{invoice.notes || "No notes."}</p>
+            {invoice.terms && <p className="who">Terms: {invoice.terms}</p>}
+          </>
+        )}
+      </div>
 
       {!["VOID", "PAID"].includes(invoice.status) && !editing && (
         <div className="card" style={{ marginTop: 16 }}>

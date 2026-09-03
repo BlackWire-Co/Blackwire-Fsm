@@ -37,11 +37,25 @@ const jobInclude = {
   technicians: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
 } as const;
 
+// Named sort presets for the Jobs list. "recent" (newest created first) is
+// the default — before this, the list only ever ordered by scheduled date
+// ascending, which effectively buried anything you just created or worked
+// today at the bottom (or wherever it fell relative to old scheduled dates)
+// instead of showing recent activity up top. "scheduled" preserves that
+// original ordering for anyone who specifically wants the upcoming queue.
+const JOB_SORTS: Record<string, any> = {
+  recent: [{ createdAt: "desc" }],
+  oldest: [{ createdAt: "asc" }],
+  scheduled: [{ scheduledDate: "asc" }, { startTime: "asc" }],
+};
+
 // GET /jobs supports the dashboard + schedule views via query params:
 //   ?status=NEW,NEEDS_SCHEDULING   ?technicianId=...   ?from=...&to=...   ?unassigned=true
+//   ?sort=recent|oldest|scheduled  (defaults to "recent" — see JOB_SORTS above)
 router.get("/", async (req: AuthedRequest, res) => {
-  const { status, technicianId, from, to, unassigned } = req.query as Record<string, string | undefined>;
+  const { status, technicianId, from, to, unassigned, sort } = req.query as Record<string, string | undefined>;
   const { page, pageSize, skip, take } = parsePagination(req, 50, 500);
+  const orderBy = JOB_SORTS[sort || ""] || JOB_SORTS.recent;
 
   const where: any = {};
   if (status) where.status = { in: status.split(",") as JobStatus[] };
@@ -62,7 +76,7 @@ router.get("/", async (req: AuthedRequest, res) => {
     prisma.job.findMany({
       where,
       include: jobInclude,
-      orderBy: [{ scheduledDate: "asc" }, { startTime: "asc" }],
+      orderBy,
       skip,
       take,
     }),

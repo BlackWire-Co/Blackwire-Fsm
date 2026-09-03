@@ -254,11 +254,22 @@ button { font-family: inherit; cursor: pointer; }
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 0;
+  padding: 10px 8px;
+  margin: 0 -8px;
+  border-radius: 6px;
   border-bottom: 1px solid var(--line);
   font-size: 14px;
+  transition: background-color 0.12s ease;
 }
 .job-row:last-child { border-bottom: none; }
+
+/* Rows wrapped in a <Link> (Dashboard, Schedule, Customer detail, etc.) —
+   highlight the whole row and show a pointer on hover so it's obvious the
+   row is clickable, not just the text inside it. */
+a:hover > .job-row {
+  background: var(--surface-2);
+  cursor: pointer;
+}
 
 .job-time {
   font-family: var(--font-mono);
@@ -326,6 +337,19 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--violet);
   box-shadow: 0 0 0 3px var(--violet-wash);
+}
+
+/* Dropdowns (e.g. the technician "Assign to…" picker on Schedule) had no
+   hover feedback at all before this — same background at rest and on
+   hover, and no pointer cursor, so hovering over them gave no indication
+   they were interactive. */
+select:not(:disabled) {
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+select:hover:not(:disabled) {
+  background: var(--surface-3);
+  border-color: var(--muted);
 }
 
 .field { margin-bottom: 14px; }

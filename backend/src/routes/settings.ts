@@ -26,6 +26,9 @@ const updateSchema = z.object({
   invoiceNumberPrefix: z.string().min(1).max(10).optional(),
   autoSendReminders: z.boolean().optional(),
   reminderHoursBefore: z.number().int().min(1).max(168).optional(),
+  // Capped well above any reasonable hand-written override — this is a
+  // pasted stylesheet, not a place to smuggle in a huge asset.
+  customCss: z.string().max(20000).optional(),
 });
 
 router.patch("/", async (req: AuthedRequest, res) => {

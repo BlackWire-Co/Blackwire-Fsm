@@ -461,6 +461,10 @@ model AppSettings {
   invoiceNumberPrefix String  @default("INV")
   autoSendReminders   Boolean  @default(false)
   reminderHoursBefore Int      @default(24)
+  // Freeform CSS an admin can paste in Settings to tweak the look of the
+  // staff app (hover states, spacing, colors, etc.) without touching code.
+  // Injected as a <style> tag on every staff page; null/empty = no override.
+  customCss           String?  @db.Text
   updatedAt           DateTime @updatedAt
 
   @@map("app_settings")
