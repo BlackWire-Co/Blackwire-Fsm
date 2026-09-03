@@ -96,9 +96,48 @@ model Customer {
   invoices   Invoice[]
   messages   CustomerMessage[]
   documents  CustomerDocument[]
+  phones     CustomerPhone[]
+  emails     CustomerEmail[]
 
   @@index([lastName, firstName])
   @@map("customers")
+}
+
+// Lets a customer carry any number of labeled phone numbers (Mobile, Home,
+// Work, Office, etc.) instead of being limited to the single `phone` /
+// `mobilePhone` columns above. Exactly one row per customer is flagged
+// isPrimary; the legacy `phone`/`mobilePhone` columns on Customer are kept
+// in sync with these rows (see syncPhoneMirror in routes/customers.ts) so
+// existing notification/search/CSV code that reads those columns directly
+// keeps working unchanged.
+model CustomerPhone {
+  id         String   @id @default(uuid())
+  customerId String
+  label      String   @default("Mobile")
+  number     String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_phones")
+}
+
+// Same idea as CustomerPhone, for email addresses. The primary row is
+// mirrored onto Customer.email.
+model CustomerEmail {
+  id         String   @id @default(uuid())
+  customerId String
+  label      String   @default("Primary")
+  address    String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_emails")
 }
 
 model Property {
@@ -419,7 +458,7 @@ model AppSettings {
   defaultTaxRate      Decimal  @db.Decimal(5, 2) @default(0)
   jobNumberPrefix     String   @default("JOB")
   estimateNumberPrefix String  @default("EST")
-  invoiceNumberPrefix String   @default("INV")
+  invoiceNumberPrefix String  @default("INV")
   autoSendReminders   Boolean  @default(false)
   reminderHoursBefore Int      @default(24)
   updatedAt           DateTime @updatedAt

@@ -3,27 +3,51 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 
-const NAV = [
-  { to: "/", label: "Dashboard", end: true, roles: ["ADMIN", "OFFICE", "TECHNICIAN"] },
-  { to: "/schedule", label: "Schedule", roles: ["ADMIN", "OFFICE"] },
-  { to: "/jobs", label: "Jobs", roles: ["ADMIN", "OFFICE", "TECHNICIAN"] },
-  { to: "/customers", label: "Customers", roles: ["ADMIN", "OFFICE", "TECHNICIAN"] },
-  { to: "/messages", label: "Messages", roles: ["ADMIN", "OFFICE"] },
-  { to: "/estimates", label: "Estimates", roles: ["ADMIN", "OFFICE"] },
-  { to: "/invoices", label: "Invoices", roles: ["ADMIN", "OFFICE"] },
-  { to: "/pricebook", label: "Price Book", roles: ["ADMIN", "OFFICE"] },
-  { to: "/settings/templates", label: "Email Templates", roles: ["ADMIN"] },
-  { to: "/settings/notification-log", label: "Notification Log", roles: ["ADMIN"] },
-  { to: "/reports", label: "Reports", roles: ["ADMIN", "OFFICE"] },
-  { to: "/settings", label: "Settings", roles: ["ADMIN"] },
-  { to: "/settings/users", label: "Users", roles: ["ADMIN"] },
+// Grouped instead of one flat 13-item list, so the sidebar reads as
+// "where would this be" (Field Ops / Money / Admin) rather than a wall of
+// links in build order. A group that ends up with zero visible items for
+// the current user's roles (e.g. a Technician sees no "Money" items) is
+// skipped entirely rather than rendering an empty heading.
+const NAV_GROUPS = [
+  {
+    heading: "Field Ops",
+    items: [
+      { to: "/", label: "Dashboard", end: true, roles: ["ADMIN", "OFFICE", "TECHNICIAN"] },
+      { to: "/schedule", label: "Schedule", roles: ["ADMIN", "OFFICE"] },
+      { to: "/jobs", label: "Jobs", roles: ["ADMIN", "OFFICE", "TECHNICIAN"] },
+      { to: "/customers", label: "Customers", roles: ["ADMIN", "OFFICE", "TECHNICIAN"] },
+      { to: "/messages", label: "Messages", roles: ["ADMIN", "OFFICE"] },
+    ],
+  },
+  {
+    heading: "Money",
+    items: [
+      { to: "/estimates", label: "Estimates", roles: ["ADMIN", "OFFICE"] },
+      { to: "/invoices", label: "Invoices", roles: ["ADMIN", "OFFICE"] },
+      { to: "/pricebook", label: "Price Book", roles: ["ADMIN", "OFFICE"] },
+      { to: "/reports", label: "Reports", roles: ["ADMIN", "OFFICE"] },
+    ],
+  },
+  {
+    heading: "Admin",
+    items: [
+      { to: "/settings", label: "Settings", roles: ["ADMIN"] },
+      { to: "/settings/users", label: "Users", roles: ["ADMIN"] },
+      { to: "/settings/templates", label: "Email Templates", roles: ["ADMIN"] },
+      { to: "/settings/notification-log", label: "Notification Log", roles: ["ADMIN"] },
+    ],
+  },
 ];
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
-  const nav = NAV.filter((item) => !user || item.roles.some((r) => user.roles.includes(r as any)));
+
+  const groups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !user || item.roles.some((r) => user.roles.includes(r as any))),
+  })).filter((group) => group.items.length > 0);
 
   // Close the mobile drawer automatically whenever the route changes, so
   // tapping a link doesn't leave the overlay open behind the new page.
@@ -46,15 +70,20 @@ export default function Layout() {
           <span className="tag">FSM</span>
         </div>
         <nav>
-          {nav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
-            >
-              {item.label}
-            </NavLink>
+          {groups.map((group) => (
+            <div key={group.heading} className="nav-group">
+              <div className="nav-section-label">{group.heading}</div>
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="sidebar-footer">
