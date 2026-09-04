@@ -4,7 +4,7 @@
 
 A self-hosted field service management app for small electrical/HVAC/plumbing/handyman
 contractors.
-
+<img src="fsm-screenshots/company-facing/Dashboard.png" alt="Dashboard" width="800">
 ## What's included
 
 **(Core)**
