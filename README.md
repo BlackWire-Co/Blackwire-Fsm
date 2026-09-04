@@ -4,7 +4,9 @@
 
 A self-hosted field service management app for small electrical/HVAC/plumbing/handyman
 contractors.
+
 <img src="fsm-screenshots/company-facing/Dashboard.png" alt="Dashboard" width="800">
+
 ## What's included
 
 **(Core)**
@@ -101,11 +103,17 @@ contractors.
 - **Appointments**: customers see upcoming and past service at their properties -
   status, scheduled time, assigned technician, and any customer-visible notes.
   Internal notes, material costs, and labor rates are never exposed.
+<img src="fsm-screenshots/customer-portal/appointments.png" alt="appointments" width="800">
+  
 - **Estimates**: customers can view and self-approve or decline (typing their name
   counts as an electronic signature, IP-logged) - the same approval path staff use
   internally, so approvals are consistent either way. PDF download included.
+<img src="fsm-screenshots/customer-portal/estimates.png" alt="estimates" width="800">
+  
 - **Invoices**: customers see balance due and payment history, with PDF download
   (including any signature captured on the job, same as the staff view).
+<img src="fsm-screenshots/customer-portal/invoices.png" alt="invoices" width="800">
+  
 - **"Pay Invoice"**: with no payment processor configured (the default -
   `PAYMENT_PROVIDER=none`), clicking Pay never fakes a charge. It tells the customer
   online payment isn't set up yet and drops a message in the office inbox so a human
@@ -114,9 +122,12 @@ contractors.
 - **Messages**: a simple two-way thread per customer. Customers message from the
   portal; staff see every conversation in a new **Messages** inbox (unread counts,
   most recent first) and reply from the customer's page.
+  <img src="fsm-screenshots/customer-portal/messages.png" alt="messages" width="800">
 - **Document/photo upload**: customers can upload files (e.g. something office asked
   for) straight to MinIO from the portal. Staff view them from the customer's page
   ("Documents" link) read-only gallery with download links.
+ <img src="fsm-screenshots/customer-portal/documents.png" alt="Documents" width="800">
+  
 - **Message threads refresh automatically** (polling every 10–15s) on both the portal
   and staff sides, with a note that replies work like email rather than instant chat 
   no more needing a manual page reload to see a new message.
@@ -139,7 +150,7 @@ contractors.
   the earlier feedback that notifications should be opt-in) to auto-send the
   appointment reminder template a configurable number of hours before each job 
   handled by the same scheduler.
-- **Light/dark mode**: a toggle in the sidebar (both staff app and customer portal)
+- **Light/dark mode**: (--UPDATE: temporarily disabled ) a toggle in the sidebar (both staff app and customer portal)
   switches themes instantly and remembers your choice. Defaults to dark to match the
   BlackWire brand.
 
