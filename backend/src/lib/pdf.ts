@@ -45,7 +45,7 @@ export function generateDocumentPdf(data: DocData): Promise<Buffer> {
     // position throughout the whole document. Every block below measures
     // its own real rendered height (via heightOfString for wrapped text)
     // before advancing the cursor, and checks for a page break before
-    // drawing anything — this is what the old version got wrong: it mixed
+    // drawing anything - this is what the old version got wrong: it mixed
     // pdfkit's own internal flow cursor with a separately-tracked variable
     // that didn't account for wrapped multi-line text, so later blocks
     // (totals, signature, notes) could start before earlier content had

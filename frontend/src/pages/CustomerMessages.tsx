@@ -36,7 +36,7 @@ export default function CustomerMessages() {
       <div className="page-header">
         <div>
           <h1>{customer ? `${customer.firstName} ${customer.lastName}` : "Loading…"}</h1>
-          <div className="sub">Customer portal conversation — updates like email, not instant chat</div>
+          <div className="sub">Customer portal conversation - updates like email, not instant chat</div>
         </div>
         <button className="btn ghost" onClick={loadMessages}>Refresh</button>
       </div>

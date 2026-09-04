@@ -2,7 +2,7 @@ export interface SmsProvider {
   send(to: string, message: string): Promise<{ ok: boolean; error?: string }>;
 }
 
-// Default provider when SMS_PROVIDER is unset or "none" — cleanly records
+// Default provider when SMS_PROVIDER is unset or "none" - cleanly records
 // that SMS wasn't attempted rather than failing or silently dropping it.
 class NullSmsProvider implements SmsProvider {
   async send(): Promise<{ ok: boolean; error?: string }> {
@@ -10,8 +10,8 @@ class NullSmsProvider implements SmsProvider {
   }
 }
 
-// Add real providers here as they're needed — e.g. a TwilioSmsProvider
-// reading TWILIO_ACCOUNT_SID/TWILIO_AUTH_TOKEN/TWILIO_FROM_NUMBER — and
+// Add real providers here as they're needed - e.g. a TwilioSmsProvider
+// reading TWILIO_ACCOUNT_SID/TWILIO_AUTH_TOKEN/TWILIO_FROM_NUMBER - and
 // wire them into the switch below. Nothing else in the app needs to change;
 // callers only ever see the SmsProvider interface.
 export function getSmsProvider(): SmsProvider {

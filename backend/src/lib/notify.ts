@@ -15,8 +15,8 @@ interface NotifyCustomer {
 /**
  * Sends a templated notification to a customer over email (if they have an
  * address) and/or SMS (only when they've asked to be reached by text and
- * have a phone number on file — we don't double-send by default). Every
- * attempt — sent, failed, or skipped because nothing's configured — gets
+ * have a phone number on file - we don't double-send by default). Every
+ * attempt - sent, failed, or skipped because nothing's configured - gets
  * logged so gaps are visible instead of silently vanishing.
  *
  * Never throws: a notification failure should never block the job/estimate/

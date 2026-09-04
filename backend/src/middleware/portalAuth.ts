@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 // Deliberately a distinct token shape and verification path from staff auth
 // (middleware/auth.ts). A customer token must never be accepted by a staff
-// route, and a staff token must never be accepted here — mixing the two
+// route, and a staff token must never be accepted here - mixing the two
 // schemes is how you end up with a customer hitting an admin endpoint.
 export interface PortalRequest extends Request {
   customer?: {

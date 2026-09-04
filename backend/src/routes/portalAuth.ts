@@ -24,7 +24,7 @@ router.post("/login", loginLimiter, async (req, res) => {
   const customer = await prisma.customer.findFirst({ where: { email: parsed.data.email.toLowerCase() } });
 
   // Constant-shape response whether the account exists, isn't portal-enabled,
-  // or the password is wrong — don't leak which emails have portal access.
+  // or the password is wrong - don't leak which emails have portal access.
   if (!customer || !customer.portalEnabled || !customer.portalPasswordHash) {
     return res.status(401).json({ error: "Invalid email or password" });
   }

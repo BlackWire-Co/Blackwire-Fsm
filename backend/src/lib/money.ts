@@ -1,5 +1,5 @@
 // Accepts number, string, or Prisma's Decimal type (which has toString/valueOf
-// and coerces correctly through Number()) — kept loose here since call sites
+// and coerces correctly through Number()) - kept loose here since call sites
 // pass raw Prisma query results straight through.
 type Numeric = number | string | { toString(): string };
 

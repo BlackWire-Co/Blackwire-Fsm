@@ -46,7 +46,7 @@ router.get("/summary", async (req, res) => {
   // Revenue actually collected in range (cash-basis, from payments).
   const revenue = payments.reduce((s, p) => s + Number(p.amount), 0);
 
-  // Outstanding vs paid across all non-draft/void invoices (not range-limited —
+  // Outstanding vs paid across all non-draft/void invoices (not range-limited -
   // "what's currently owed" is a point-in-time fact, not a period total).
   let outstandingTotal = 0;
   let outstandingCount = 0;

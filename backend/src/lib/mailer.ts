@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 let transporter: nodemailer.Transporter | null | undefined;
 
 // Lazily built so a missing/blank SMTP config doesn't crash the app at
-// boot — the whole point of self-hosted field service software is that it
+// boot - the whole point of self-hosted field service software is that it
 // has to keep working with zero external integrations configured.
 function getTransporter() {
   if (transporter !== undefined) return transporter;
@@ -30,7 +30,7 @@ export async function sendMail(params: { to: string; subject: string; html: stri
   if (!t) return { ok: false, error: "SMTP not configured (SMTP_HOST is unset)" };
 
   // Built as an address object rather than a hand-formatted "Name <email>"
-  // string — string parsing is where a stray/missing quote from an .env
+  // string - string parsing is where a stray/missing quote from an .env
   // value turns into an empty envelope sender, which mail servers reject
   // outright ("Sender address rejected: No empty senders allowed").
   const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;

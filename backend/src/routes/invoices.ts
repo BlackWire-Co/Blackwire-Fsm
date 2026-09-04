@@ -63,7 +63,7 @@ router.get("/", async (req, res) => {
   res.json({ items: items.map(withTotals), total, page, pageSize });
 });
 
-// Export only — invoice import is intentionally not offered. Estimates/
+// Export only - invoice import is intentionally not offered. Estimates/
 // invoices carry real accounting history (payments, balances), and a wrong
 // or partial CSV import could quietly corrupt someone's books. Exporting
 // existing data is safe; recreating financial records from a spreadsheet
@@ -211,8 +211,8 @@ router.patch("/:id", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: A
 });
 
 // Notes and terms are free text, not part of the accounting math (unlike
-// line items, tax rate, or discount), so — unlike the line-item edit above
-// — they stay editable regardless of status. A sent or even paid invoice's
+// line items, tax rate, or discount), so - unlike the line-item edit above
+// - they stay editable regardless of status. A sent or even paid invoice's
 // numbers are locked in, but a typo in the notes or a terms update
 // shouldn't require voiding and reissuing the whole document. Blocked only
 // on VOID, since that's meant to be a dead record.
@@ -250,7 +250,7 @@ router.post("/:id/send", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (re
   }
 });
 
-// Explicit, opt-in email — separate from "Mark as Sent" and from recording
+// Explicit, opt-in email - separate from "Mark as Sent" and from recording
 // a payment, so those actions don't silently fire an email every time.
 router.post("/:id/notify", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: AuthedRequest, res) => {
   const templateKey = req.body.templateKey === "PAYMENT_RECEIPT" ? "PAYMENT_RECEIPT" : "INVOICE_READY";
@@ -302,7 +302,7 @@ router.post("/:id/void", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (re
 });
 
 // Sends a sent invoice back to DRAFT so line items can be corrected and
-// re-sent. Blocked once any payment has been recorded — at that point the
+// re-sent. Blocked once any payment has been recorded - at that point the
 // invoice is part of the accounting trail; void it and issue a new one
 // instead of rewriting history.
 router.post("/:id/reopen", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: AuthedRequest, res) => {

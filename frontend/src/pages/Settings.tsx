@@ -49,7 +49,7 @@ export default function Settings() {
       <div className="page-header">
         <div>
           <h1>Settings</h1>
-          <div className="sub">Company info, rates, and document numbering — used across PDFs and invoicing</div>
+          <div className="sub">Company info, rates, and document numbering - used across PDFs and invoicing</div>
         </div>
       </div>
 
@@ -92,7 +92,7 @@ export default function Settings() {
 
         <div className="card" style={{ marginBottom: 16 }}>
           <h3>Document Numbering</h3>
-          <p className="who" style={{ marginBottom: 10 }}>Changes only apply to new documents going forward — existing numbers never change.</p>
+          <p className="who" style={{ marginBottom: 10 }}>Changes only apply to new documents going forward - existing numbers never change.</p>
           <div className="grid cols-3">
             <div className="field">
               <label>Job prefix</label>
@@ -121,7 +121,7 @@ export default function Settings() {
             Automatically email a reminder before each appointment
           </label>
           <p className="who" style={{ marginBottom: 10 }}>
-            Off by default — reminders can always be sent manually from a job's page instead.
+            Off by default - reminders can always be sent manually from a job's page instead.
           </p>
           {form.autoSendReminders && (
             <div className="field" style={{ maxWidth: 220 }}>
@@ -134,9 +134,9 @@ export default function Settings() {
         <div className="card" style={{ marginBottom: 16 }}>
           <h3>Advanced: Custom CSS</h3>
           <p className="who" style={{ marginBottom: 10 }}>
-            Paste CSS here to tweak how the app looks — colors, spacing, hover effects, anything you want overridden.
+            Paste CSS here to tweak how the app looks - colors, spacing, hover effects, anything you want overridden.
             It applies across the whole staff app (not the customer portal) for every user, right after you save.
-            Leave blank to use the default styling. This isn't validated — a typo just won't do anything; it won't break the app.
+            Leave blank to use the default styling. This isn't validated - a typo just won't do anything; it won't break the app.
           </p>
           <textarea
             rows={10}

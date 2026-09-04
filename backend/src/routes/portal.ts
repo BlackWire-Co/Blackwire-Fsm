@@ -14,7 +14,7 @@ const router = Router();
 router.use(requirePortalAuth);
 
 // --- Jobs (upcoming + past appointments, service history) ---
-// Internal notes and material/labor costs are never exposed here — only
+// Internal notes and material/labor costs are never exposed here - only
 // what the spec calls "customer-visible" fields.
 router.get("/jobs", async (req: PortalRequest, res) => {
   const jobs = await prisma.job.findMany({
@@ -197,7 +197,7 @@ router.get("/invoices/:id/pdf", async (req: PortalRequest, res) => {
 
 // "Pay Invoice" never fakes a charge. With no processor configured (the
 // default), it lets the customer know and drops a message into the office
-// inbox instead, so a human follows up — matches the architecture note that
+// inbox instead, so a human follows up - matches the architecture note that
 // Stripe (or anything else) is optional, not required for the app to work.
 router.post("/invoices/:id/pay", async (req: PortalRequest, res) => {
   const invoice = await prisma.invoice.findFirst({
@@ -222,11 +222,11 @@ router.post("/invoices/:id/pay", async (req: PortalRequest, res) => {
     data: {
       customerId: req.customer!.customerId,
       fromCustomer: true,
-      body: `I'd like to pay invoice ${invoice.invoiceNumber} (balance: $${totals.balance.toFixed(2)}). Online payment isn't set up yet — please follow up with me.`,
+      body: `I'd like to pay invoice ${invoice.invoiceNumber} (balance: $${totals.balance.toFixed(2)}). Online payment isn't set up yet - please follow up with me.`,
     },
   });
 
-  res.json({ redirectUrl: null, message: "Online payment isn't set up yet. We've let the office know — they'll follow up with you shortly." });
+  res.json({ redirectUrl: null, message: "Online payment isn't set up yet. We've let the office know - they'll follow up with you shortly." });
 });
 
 // --- Messages (communicate with the contractor) ---

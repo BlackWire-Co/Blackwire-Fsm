@@ -15,7 +15,7 @@ export function applyCustomCss(css: string) {
 }
 
 // Fetches the current override from the backend and applies it. Safe to
-// call before we know whether the user is authenticated — a failed
+// call before we know whether the user is authenticated - a failed
 // request (e.g. not logged in yet) just leaves things as they are instead
 // of throwing.
 export async function loadCustomCss(api: (path: string) => Promise<any>) {
@@ -23,6 +23,6 @@ export async function loadCustomCss(api: (path: string) => Promise<any>) {
     const { customCss } = await api("/theme");
     applyCustomCss(customCss);
   } catch {
-    // Not logged in, offline, etc. — nothing to apply yet.
+    // Not logged in, offline, etc. - nothing to apply yet.
   }
 }

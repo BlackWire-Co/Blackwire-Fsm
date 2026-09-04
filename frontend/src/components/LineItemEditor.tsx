@@ -43,7 +43,7 @@ export default function LineItemEditor({
           onChange={(e) => { if (e.target.value) addFromPriceBook(e.target.value); e.target.value = ""; }}
         >
           <option value="">+ Add from price book…</option>
-          {priceBook.map((p) => <option key={p.id} value={p.id}>{p.name} — ${Number(p.salePrice).toFixed(2)}</option>)}
+          {priceBook.map((p) => <option key={p.id} value={p.id}>{p.name} - ${Number(p.salePrice).toFixed(2)}</option>)}
         </select>
       )}
       {items.map((item, i) => (

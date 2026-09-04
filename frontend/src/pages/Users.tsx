@@ -85,7 +85,7 @@ export default function Users() {
         <div>
           <h1>Users</h1>
           <div className="sub">
-            Admin, office, and technician accounts — a user can hold more than one role,
+            Admin, office, and technician accounts - a user can hold more than one role,
             useful for a solo operator covering every job themselves.
           </div>
         </div>

@@ -21,7 +21,7 @@ export default function NotificationLog() {
       <div className="page-header">
         <div>
           <h1>Notification Log</h1>
-          <div className="sub">Every email/SMS attempt — sent, failed, or skipped because nothing's configured</div>
+          <div className="sub">Every email/SMS attempt - sent, failed, or skipped because nothing's configured</div>
         </div>
         <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} style={{ width: 160 }}>
           <option value="">All</option>
@@ -54,7 +54,7 @@ export default function NotificationLog() {
                   {log.status}
                 </span>
               </td>
-              <td className="who">{log.error || "—"}</td>
+              <td className="who">{log.error || "-"}</td>
             </tr>
           ))}
           {logs.length === 0 && <tr><td colSpan={6} className="empty-note">No notifications logged yet.</td></tr>}

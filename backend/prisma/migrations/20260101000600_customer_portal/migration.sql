@@ -1,5 +1,5 @@
 -- Phase 5: customer portal. Adds portal login fields directly to customers
--- (separate password hash from staff `users` — customers are never staff
+-- (separate password hash from staff `users` - customers are never staff
 -- accounts and must never be able to authenticate against staff routes),
 -- plus a lightweight message thread and customer-uploaded documents.
 

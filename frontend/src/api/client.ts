@@ -30,7 +30,7 @@ export async function api<T = any>(
   return data as T;
 }
 
-// Multipart upload (photos) — bypasses the JSON-only `api()` helper since
+// Multipart upload (photos) - bypasses the JSON-only `api()` helper since
 // the browser needs to set its own multipart boundary header.
 export async function uploadFile<T = any>(path: string, file: File, fields: Record<string, string> = {}): Promise<T> {
   const formData = new FormData();
@@ -48,7 +48,7 @@ export async function uploadFile<T = any>(path: string, file: File, fields: Reco
 }
 
 // PDF endpoints require auth, but a plain <a href> or window.open() doesn't
-// send our Authorization header — the browser hits the API unauthenticated
+// send our Authorization header - the browser hits the API unauthenticated
 // and gets a bare "Not authenticated" JSON error instead of a PDF. Fetch it
 // ourselves with the header attached, then hand the browser a local blob URL.
 export async function openPdf(path: string) {
@@ -87,7 +87,7 @@ export async function downloadFile(path: string, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
-// Generic CSV/file upload — same multipart pattern as uploadFile but with a
+// Generic CSV/file upload - same multipart pattern as uploadFile but with a
 // "file" field name and no extra fields, used by the CSV import endpoints.
 export async function uploadCsv<T = any>(path: string, file: File): Promise<T> {
   const formData = new FormData();

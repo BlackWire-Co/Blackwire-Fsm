@@ -35,7 +35,7 @@ export default function PortalAcceptInvite() {
       <div className="login-shell">
         <div className="login-card">
           <h1>Missing invite link</h1>
-          <p style={{ color: "#8b899a", fontSize: 13 }}>This page needs an invite link from your email — please use the link we sent you.</p>
+          <p style={{ color: "#8b899a", fontSize: 13 }}>This page needs an invite link from your email - please use the link we sent you.</p>
         </div>
       </div>
     );

@@ -22,7 +22,7 @@ NODE_ENV=production
 # e.g. http://192.168.1.50:3001
 PUBLIC_API_URL=http://localhost:3001
 
-# Same idea for photo/document links — this is what browsers use to actually
+# Same idea for photo/document links - this is what browsers use to actually
 # download from MinIO. Must be reachable from wherever people view photos
 # (their phone, another computer), NOT the internal Docker service name.
 PUBLIC_S3_URL=http://localhost:9000
@@ -42,11 +42,11 @@ SMS_PROVIDER=none
 
 # --- Payment provider (pluggable, Phase 5 customer portal) ---
 # "none" means the portal's Pay Invoice button notifies the office instead
-# of processing a real charge — no processor is required for the app to work.
+# of processing a real charge - no processor is required for the app to work.
 PAYMENT_PROVIDER=none
 
 # The customer portal's own URL (used to build invite links in emails).
-# Same host/port as PUBLIC_API_URL's frontend counterpart — set this to your
+# Same host/port as PUBLIC_API_URL's frontend counterpart - set this to your
 # LAN IP or domain in production, e.g. http://192.168.1.50:8080
 PUBLIC_APP_URL=http://localhost:8080
 

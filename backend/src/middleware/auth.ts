@@ -44,7 +44,7 @@ export function requireAuth(req: AuthedRequest, res: Response, next: NextFunctio
 }
 
 /**
- * True when a user holds ONLY the Technician role — i.e. someone wearing
+ * True when a user holds ONLY the Technician role - i.e. someone wearing
  * ADMIN or OFFICE alongside TECHNICIAN (a solo operator covering every hat)
  * gets full visibility rather than being scoped to just their assigned jobs.
  */
@@ -54,7 +54,7 @@ export function isPureTechnician(roles: UserRole[]) {
 
 /**
  * Restricts a route to users holding at least one of the given roles.
- * Server-side authorization only — the client never gets to decide what
+ * Server-side authorization only - the client never gets to decide what
  * it's allowed to do.
  */
 export function requireRole(...roles: UserRole[]) {

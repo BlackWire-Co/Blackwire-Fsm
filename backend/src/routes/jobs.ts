@@ -38,7 +38,7 @@ const jobInclude = {
 } as const;
 
 // Named sort presets for the Jobs list. "recent" (newest created first) is
-// the default — before this, the list only ever ordered by scheduled date
+// the default - before this, the list only ever ordered by scheduled date
 // ascending, which effectively buried anything you just created or worked
 // today at the bottom (or wherever it fell relative to old scheduled dates)
 // instead of showing recent activity up top. "scheduled" preserves that
@@ -51,7 +51,7 @@ const JOB_SORTS: Record<string, any> = {
 
 // GET /jobs supports the dashboard + schedule views via query params:
 //   ?status=NEW,NEEDS_SCHEDULING   ?technicianId=...   ?from=...&to=...   ?unassigned=true
-//   ?sort=recent|oldest|scheduled  (defaults to "recent" — see JOB_SORTS above)
+//   ?sort=recent|oldest|scheduled  (defaults to "recent" - see JOB_SORTS above)
 router.get("/", async (req: AuthedRequest, res) => {
   const { status, technicianId, from, to, unassigned, sort } = req.query as Record<string, string | undefined>;
   const { page, pageSize, skip, take } = parsePagination(req, 50, 500);
@@ -88,7 +88,7 @@ router.get("/", async (req: AuthedRequest, res) => {
 
 // --- CSV export/import ---
 // Import matches an existing customer by email and either matches an
-// existing property by address or creates a new one — jobs are never
+// existing property by address or creates a new one - jobs are never
 // imported without a resolvable customer, since an orphaned job would be
 // invisible everywhere in the app that scopes by customer.
 
@@ -339,7 +339,7 @@ router.post("/:id/status", async (req: AuthedRequest, res) => {
 });
 
 // Manual notification triggers. Notifications are opt-in per action rather
-// than automatic on every status change — a solo operator changing a job's
+// than automatic on every status change - a solo operator changing a job's
 // status ten times a day shouldn't mean ten emails to the customer. Office
 // or admin sends exactly when they mean to.
 const JOB_NOTIFY_TEMPLATES = ["APPOINTMENT_CONFIRMATION", "APPOINTMENT_REMINDER", "TECHNICIAN_EN_ROUTE", "JOB_COMPLETION"] as const;

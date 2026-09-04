@@ -7,7 +7,7 @@ import { logAudit } from "./audit";
 
 // A simple setInterval-based scheduler running inside the single backend
 // process. This is intentionally NOT a distributed job queue (no BullMQ/
-// Redis-backed workers) — for a self-hosted single-container deployment,
+// Redis-backed workers) - for a self-hosted single-container deployment,
 // an in-process timer is simpler to operate and sufficient. If this app is
 // ever run as multiple backend replicas, this would need to move to a
 // proper distributed queue to avoid duplicate runs.
@@ -109,7 +109,7 @@ export function startScheduler() {
   if (started) return; // guard against double-start from hot reload in dev
   started = true;
 
-  const RUN_EVERY_MS = 30 * 60 * 1000; // 30 minutes — coarse but adequate for daily-scale scheduling
+  const RUN_EVERY_MS = 30 * 60 * 1000; // 30 minutes - coarse but adequate for daily-scale scheduling
   const tick = async () => {
     await generateRecurringJobs().catch((err) => console.error("generateRecurringJobs failed:", err.message));
     await sendDueReminders().catch((err) => console.error("sendDueReminders failed:", err.message));

@@ -42,7 +42,7 @@ export default function Schedule() {
 
       <div className="grid cols-2">
         <div className="card">
-          <h3>Technicians — {new Date(date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</h3>
+          <h3>Technicians - {new Date(date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</h3>
           {technicians.map((tech) => {
             const techJobs = jobs.filter((j) => j.technicians.some((t: any) => t.user.id ? t.userId === tech.id : t.userId === tech.id));
             return (
@@ -52,7 +52,7 @@ export default function Schedule() {
                 {techJobs.map((job) => (
                   <Link key={job.id} to={`/jobs/${job.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                     <div className="job-row">
-                      <div style={{ flex: 1 }}>{job.title} — {job.customer.firstName} {job.customer.lastName}</div>
+                      <div style={{ flex: 1 }}>{job.title} - {job.customer.firstName} {job.customer.lastName}</div>
                       <StatusBadge status={job.status} />
                     </div>
                   </Link>

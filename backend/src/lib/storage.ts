@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 
 const BUCKET = process.env.S3_BUCKET || "fsm-documents";
 
-// Used for actual upload/read operations — reaches MinIO over the internal
+// Used for actual upload/read operations - reaches MinIO over the internal
 // Docker network, so it uses the service name ("minio") as configured.
 export const s3 = new S3Client({
   endpoint: process.env.S3_ENDPOINT,
@@ -18,7 +18,7 @@ export const s3 = new S3Client({
 
 // Used only to SIGN download URLs that get handed to browsers/phones, which
 // can't resolve the internal "minio" hostname. SigV4 signatures encode the
-// host, so we can't just swap it after signing — a separate client pointed
+// host, so we can't just swap it after signing - a separate client pointed
 // at the externally-reachable endpoint is required. Falls back to
 // S3_ENDPOINT if no public endpoint is configured (fine for localhost-only use).
 const publicEndpoint = process.env.S3_PUBLIC_ENDPOINT || process.env.S3_ENDPOINT;

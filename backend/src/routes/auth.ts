@@ -110,7 +110,7 @@ router.post("/users", requireAuth, requireRole(UserRole.ADMIN), async (req: Auth
 });
 
 // Admin user-management: list, deactivate/reactivate, reset password.
-// Users are never hard-deleted — deactivating preserves audit/job history
+// Users are never hard-deleted - deactivating preserves audit/job history
 // integrity (a technician's past jobs still need to point to someone).
 
 router.get("/users", requireAuth, requireRole(UserRole.ADMIN), async (_req, res) => {

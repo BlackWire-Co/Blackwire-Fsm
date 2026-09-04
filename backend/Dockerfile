@@ -3,7 +3,7 @@ WORKDIR /app
 
 # Alpine ships OpenSSL 3.x. Prisma's engine needs this present at generate
 # time too, or its own auto-detection can guess wrong and fetch an engine
-# built for the wrong OpenSSL version — hence also pinning binaryTargets
+# built for the wrong OpenSSL version - hence also pinning binaryTargets
 # in schema.prisma to linux-musl-openssl-3.0.x.
 RUN apk add --no-cache openssl
 

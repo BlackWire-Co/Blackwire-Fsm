@@ -158,7 +158,7 @@ export default function Invoices() {
             <tr key={inv.id}>
               <td className="jobnum"><Link to={`/invoices/${inv.id}`}>{inv.invoiceNumber}</Link></td>
               <td>{inv.customer.firstName} {inv.customer.lastName}</td>
-              <td>{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "—"}</td>
+              <td>{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "-"}</td>
               <td>${inv.totals.total.toFixed(2)}</td>
               <td>${inv.totals.balance.toFixed(2)}</td>
               <td><StatusBadge status={inv.status} /></td>

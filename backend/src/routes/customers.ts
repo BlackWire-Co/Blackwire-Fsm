@@ -100,8 +100,8 @@ router.get("/", async (req, res) => {
 // Kept intentionally simple: one row per customer, with optional columns to
 // also create that customer's first property in the same pass (useful when
 // migrating from another platform where "customer" and "job site" are often
-// the same record). Existing customers are never updated by import — only
-// new ones are created — to avoid an import silently overwriting hand-edited
+// the same record). Existing customers are never updated by import - only
+// new ones are created - to avoid an import silently overwriting hand-edited
 // data.
 
 const CUSTOMER_EXPORT_COLUMNS = [
@@ -244,7 +244,7 @@ router.patch("/:id", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: A
 
   // phone/mobilePhone/email are derived from the customer_phones /
   // customer_emails tables now (see the /phones and /emails routes below)
-  // — edits to them here would just get overwritten on the next sync, so
+  // - edits to them here would just get overwritten on the next sync, so
   // they're dropped from this endpoint rather than silently ignored.
   const { phone, mobilePhone, email, ...rest } = parsed.data;
   const data = { ...rest };
@@ -440,7 +440,7 @@ router.delete("/:id/emails/:emailId", requireRole(UserRole.ADMIN, UserRole.OFFIC
   res.json(customerWithContacts);
 });
 
-// Customers are archived, never hard-deleted — a customer's jobs, invoices,
+// Customers are archived, never hard-deleted - a customer's jobs, invoices,
 // and history stay intact for accounting and audit purposes. Archived
 // customers are excluded from the default list view (see GET / below if you
 // add a status filter later) but remain reachable by direct link.

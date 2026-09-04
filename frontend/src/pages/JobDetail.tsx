@@ -18,7 +18,7 @@ const ALL_STATUSES = [
   "AWAITING_PARTS", "COMPLETED", "CANCELLED", "INVOICED", "PAID",
 ];
 
-// Statuses where the job is effectively done — used only to pick a better
+// Statuses where the job is effectively done - used only to pick a better
 // label than "Not yet scheduled" when a finished job never had a
 // scheduledDate set (e.g. it was worked and completed same-day without
 // ever going through the Schedule page first).
@@ -150,7 +150,7 @@ export default function JobDetail() {
 
   // "Scheduled: Not yet scheduled" used to show even on a job that was
   // already completed/invoiced/paid without ever going through the
-  // Schedule page — reading as if the job was still pending. When the job
+  // Schedule page - reading as if the job was still pending. When the job
   // is finished and has no scheduledDate, show when it was actually
   // completed instead (pulled from status history) rather than a label
   // that implies nothing has happened yet.
@@ -161,7 +161,7 @@ export default function JobDetail() {
     scheduledLabel = new Date(job.scheduledDate).toLocaleString();
   } else if (isFinished) {
     scheduledLabel = completedEntry
-      ? `No date was ever scheduled — completed ${new Date(completedEntry.changedAt).toLocaleString()}`
+      ? `No date was ever scheduled - completed ${new Date(completedEntry.changedAt).toLocaleString()}`
       : "No date was ever scheduled (job is finished)";
   } else {
     scheduledLabel = "Not yet scheduled";
@@ -346,7 +346,7 @@ export default function JobDetail() {
                 }}
               >
                 <option value="">Quick add from price book…</option>
-                {priceBook.map((p) => <option key={p.id} value={p.id}>{p.name} — ${Number(p.salePrice).toFixed(2)}</option>)}
+                {priceBook.map((p) => <option key={p.id} value={p.id}>{p.name} - ${Number(p.salePrice).toFixed(2)}</option>)}
               </select>
             )}
             <input placeholder="Material name" value={materialForm.name} onChange={(e) => setMaterialForm({ ...materialForm, name: e.target.value })} required style={{ flex: 2, minWidth: 140 }} />
@@ -403,7 +403,7 @@ export default function JobDetail() {
           <div key={h.id} className="job-row">
             <StatusBadge status={h.status} />
             <span className="who">{new Date(h.changedAt).toLocaleString()}</span>
-            {h.note && <span className="who">— {h.note}</span>}
+            {h.note && <span className="who">- {h.note}</span>}
           </div>
         ))}
       </div>

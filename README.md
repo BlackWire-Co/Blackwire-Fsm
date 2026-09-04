@@ -39,7 +39,7 @@ contractors.
 - **Invoices**: create manually or auto-build from a job's logged materials and time
   entries (`POST /invoices/from-job/:jobId`), edit while in draft, mark sent, void,
   server-generated PDF. Sent invoices with no payments recorded yet can be reopened
-  and corrected — once a payment exists, void and reissue instead.
+  and corrected - once a payment exists, void and reissue instead.
 - **Payments**: record cash/check/card/ACH/other payments against an invoice; invoice
   status (partially paid / paid) recalculates automatically, and a fully-paid invoice
   flips its linked job to `PAID`.
@@ -60,7 +60,7 @@ contractors.
 - **Notifications are now opt-in, not automatic.** Scheduling a job, marking it en
   route/completed, sending an estimate/invoice, or recording a payment no longer
   silently fires an email. Instead, Job Detail, Estimate Detail, and Invoice Detail
-  each have explicit "Email ___ to Customer" buttons — staff choose exactly when a
+  each have explicit "Email ___ to Customer" buttons - staff choose exactly when a
   customer gets contacted, not on every internal status change.
 - **Multi-role users.** A user can now hold more than one role at once (e.g. a solo
   operator who is Admin, Office, and Technician simultaneously) instead of being
@@ -89,7 +89,7 @@ contractors.
   of the 7 built-in templates. Editing a template never gets silently overwritten 
   defaults are only inserted if a template with that key doesn't exist yet.
 - **Notification Log page** (admin only): every send attempt  sent, failed, or
-  skipped — with the reason, so "why didn't the customer get an email" has a real
+  skipped - with the reason, so "why didn't the customer get an email" has a real
   answer instead of a black box.
 
 **(Customer Portal)**
@@ -98,19 +98,19 @@ contractors.
   can never be valid on a staff route or vice versa. Staff invite a customer from the
   Customer Detail page ("Send Portal Invite"); the customer gets an emailed link
   (`/portal/accept-invite?token=...`, valid 48 hours) to set their own password.
-- **Appointments**: customers see upcoming and past service at their properties —
+- **Appointments**: customers see upcoming and past service at their properties -
   status, scheduled time, assigned technician, and any customer-visible notes.
   Internal notes, material costs, and labor rates are never exposed.
 - **Estimates**: customers can view and self-approve or decline (typing their name
-  counts as an electronic signature, IP-logged) — the same approval path staff use
+  counts as an electronic signature, IP-logged) - the same approval path staff use
   internally, so approvals are consistent either way. PDF download included.
 - **Invoices**: customers see balance due and payment history, with PDF download
   (including any signature captured on the job, same as the staff view).
-- **"Pay Invoice"**: with no payment processor configured (the default —
+- **"Pay Invoice"**: with no payment processor configured (the default -
   `PAYMENT_PROVIDER=none`), clicking Pay never fakes a charge. It tells the customer
   online payment isn't set up yet and drops a message in the office inbox so a human
   follows up. A real processor (Stripe, etc.) can be added later by implementing
-  `PaymentProvider` in `backend/src/lib/paymentProvider.ts` — nothing else changes.
+  `PaymentProvider` in `backend/src/lib/paymentProvider.ts` - nothing else changes.
 - **Messages**: a simple two-way thread per customer. Customers message from the
   portal; staff see every conversation in a new **Messages** inbox (unread counts,
   most recent first) and reply from the customer's page.
@@ -130,7 +130,7 @@ contractors.
 - **Reports page** (admin/office): revenue collected (cash-basis, from recorded
   payments), outstanding/paid/overdue invoice totals, jobs created vs. completed,
   jobs-and-hours by technician, estimate win/loss rate, and top materials used by
-  value — all with a date-range filter.
+  value - all with a date-range filter.
 - **Recurring jobs**: set a job to repeat (weekly/biweekly/monthly/quarterly/
   semi-annually/annually) from its detail page. A lightweight in-process scheduler
   checks every 30 minutes and generates the next occurrence automatically, then
@@ -184,7 +184,7 @@ Technician  add Admin or Office alongside it and they see everything.
    ```
    The backend container now runs `prisma migrate deploy` against a real, committed
    migration history (`backend/prisma/migrations/`), so this step alone creates all
-   tables — no more manual `migrate dev` step required.
+   tables - no more manual `migrate dev` step required.
 
 4. Load demo data (10 customers, properties, 20+ jobs, 3 technicians):
    ```bash
@@ -210,13 +210,13 @@ device on the same network can reach the app at `http://<server-LAN-IP>:8080`.
 
 1. Find your server's LAN IP (`ip addr` on Linux, `ipconfig` on Windows).
 2. Set `PUBLIC_API_URL=http://<server-LAN-IP>:3001` in `.env` **before** building the
-   frontend — it's baked in at build time as `VITE_API_URL`.
+   frontend - it's baked in at build time as `VITE_API_URL`.
 3. Rebuild the frontend: `docker compose up -d --build frontend`.
 4. On a technician's phone, open `http://<server-LAN-IP>:8080` and log in.
 
 For anything beyond your local network (remote technicians, a customer portal reachable
 from the internet), put a reverse proxy with TLS (Caddy, nginx + certbot, or Traefik) in
-front of these services — that's outside this phase's scope but doesn't require touching
+front of these services - that's outside this phase's scope but doesn't require touching
 the app itself.
 
 ## User management
@@ -248,7 +248,7 @@ the app itself.
   client and open as a local blob URL, instead of a plain `<a href>` that skipped the
   Authorization header entirely.
 - **"One shot" estimates/invoices**: draft documents are fully editable; sent documents
-  can be reopened (with guardrails — see above) instead of being permanently locked
+  can be reopened (with guardrails - see above) instead of being permanently locked
   after creation.
 - **Admin job control**: admin/office now have a direct status dropdown on the Job Detail
   page rather than being limited to whatever a technician's mobile actions produced.
@@ -319,7 +319,7 @@ backend/          Node + TypeScript + Express + Prisma API
   src/lib/settings.ts        DB-backed settings singleton, seeded from .env on first boot
   src/lib/scheduler.ts       In-process timer: recurring job generation + optional reminders
   src/middleware/auth.ts     Staff JWT verification + role-based route guards
-  src/middleware/portalAuth.ts  Customer JWT verification — fully separate token scheme
+  src/middleware/portalAuth.ts  Customer JWT verification - fully separate token scheme
 frontend/         React + TypeScript + Vite
   src/pages/                 Login, Dashboard, Customers, CustomerDetail, Jobs,
                               JobDetail, Schedule, Users, Estimates, EstimateDetail,
@@ -343,18 +343,18 @@ in `.env`, then `docker compose up -d backend` (no rebuild needed  these are run
 vars). Any SMTP provider works (Gmail app password, SendGrid, Postmark, your own mail
 server, etc.).
 
-**SMS**: currently a no-op by design (`SMS_PROVIDER=none`) — see  notes above for
+**SMS**: currently a no-op by design (`SMS_PROVIDER=none`) - see  notes above for
 what's needed to wire in a real provider.
 
 **Troubleshooting**: check Settings → Notification Log as admin. "Skipped" means nothing's
-configured yet (not an error); "Failed" means SMTP rejected the send — the error message
+configured yet (not an error); "Failed" means SMTP rejected the send - the error message
 is usually specific enough to fix (bad credentials, wrong port, etc.).
 
 ## Setting up the customer portal
 
 1. Make sure `PUBLIC_APP_URL` in `.env` points to wherever people will actually load
-   the frontend (LAN IP or domain) — it's baked into the invite email link.
-2. Configure SMTP (see above) so invite emails actually send — without it, the invite
+   the frontend (LAN IP or domain) - it's baked into the invite email link.
+2. Configure SMTP (see above) so invite emails actually send - without it, the invite
    still "sends" but just logs as skipped in the Notification Log, and you'd have to
    manually hand the customer their portal URL.
 3. From a customer's detail page (staff view), click **Send Portal Invite**. Requires

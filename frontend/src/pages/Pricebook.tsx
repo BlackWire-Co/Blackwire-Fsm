@@ -131,7 +131,7 @@ export default function Pricebook() {
           {items.map((item) => (
             <tr key={item.id}>
               <td>{item.name}{item.description && <div className="who">{item.description}</div>}</td>
-              <td>{item.sku || "—"}</td>
+              <td>{item.sku || "-"}</td>
               <td>${Number(item.cost).toFixed(2)}</td>
               <td>${Number(item.salePrice).toFixed(2)}</td>
               <td>{item.taxable ? "Yes" : "No"}</td>

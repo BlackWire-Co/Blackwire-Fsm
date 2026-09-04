@@ -200,7 +200,7 @@ export default function InvoiceDetail() {
       )}
 
       {/* Notes/terms are free text, not part of the invoice's accounting
-          math, so — unlike line items above — they stay editable no matter
+          math, so - unlike line items above - they stay editable no matter
           the status (sent, paid, whatever), right up until the invoice is
           voided. */}
       <div className="card" style={{ marginTop: 16 }}>
@@ -256,7 +256,7 @@ export default function InvoiceDetail() {
         {invoice.payments.length === 0 && <div className="empty-note">No payments recorded yet.</div>}
         {invoice.payments.map((p: any) => (
           <div key={p.id} className="job-row">
-            <div style={{ flex: 1 }}>{p.method} {p.notes ? `— ${p.notes}` : ""}</div>
+            <div style={{ flex: 1 }}>{p.method} {p.notes ? `- ${p.notes}` : ""}</div>
             <div className="who">{new Date(p.paidAt).toLocaleDateString()}</div>
             <strong>${Number(p.amount).toFixed(2)}</strong>
           </div>

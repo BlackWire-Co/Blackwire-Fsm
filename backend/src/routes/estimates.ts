@@ -125,7 +125,7 @@ router.post("/:id/send", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (re
   }
 });
 
-// Explicit, opt-in email — separate from "Mark as Sent" so marking an
+// Explicit, opt-in email - separate from "Mark as Sent" so marking an
 // estimate sent doesn't silently fire an email every time. Staff choose
 // when to actually notify the customer.
 router.post("/:id/notify", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: AuthedRequest, res) => {
@@ -200,13 +200,13 @@ router.post("/:id/decline", async (req: AuthedRequest, res) => {
 
 // Sends a sent/viewed/declined estimate back to DRAFT so line items can be
 // edited and re-sent. Approved estimates are a record of what the customer
-// agreed to and can't be silently rewritten — decline it first (or create a
+// agreed to and can't be silently rewritten - decline it first (or create a
 // new estimate) if the approved terms genuinely need to change.
 router.post("/:id/reopen", requireRole(UserRole.ADMIN, UserRole.OFFICE), async (req: AuthedRequest, res) => {
   const existing = await prisma.estimate.findUnique({ where: { id: req.params.id } });
   if (!existing) return res.status(404).json({ error: "Estimate not found" });
   if (existing.status === EstimateStatus.APPROVED) {
-    return res.status(400).json({ error: "Approved estimates can't be reopened — decline it first if terms need to change, or create a new estimate." });
+    return res.status(400).json({ error: "Approved estimates can't be reopened - decline it first if terms need to change, or create a new estimate." });
   }
 
   const estimate = await prisma.estimate.update({

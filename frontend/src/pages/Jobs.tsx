@@ -153,7 +153,7 @@ export default function Jobs() {
             <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
           <div className="field">
-            <label>Assign technician(s) (optional — can schedule later)</label>
+            <label>Assign technician(s) (optional - can schedule later)</label>
             <select
               multiple
               value={form.technicianIds}
@@ -186,7 +186,7 @@ export default function Jobs() {
               <td className="jobnum">{job.jobNumber}</td>
               <td><Link to={`/jobs/${job.id}`}>{job.title}</Link></td>
               <td>{job.customer.firstName} {job.customer.lastName}</td>
-              <td>{job.scheduledDate ? new Date(job.scheduledDate).toLocaleDateString() : "—"}</td>
+              <td>{job.scheduledDate ? new Date(job.scheduledDate).toLocaleDateString() : "-"}</td>
               <td>{job.technicians?.map((t: any) => t.user.firstName).join(", ") || "Unassigned"}</td>
               <td><StatusBadge status={job.status} /></td>
             </tr>

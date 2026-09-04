@@ -31,13 +31,13 @@ export default function PortalMessages() {
       <div className="page-header">
         <div>
           <h1>Messages</h1>
-          <div className="sub">Send us a message any time — replies work like email, so check back rather than expecting an instant reply.</div>
+          <div className="sub">Send us a message any time - replies work like email, so check back rather than expecting an instant reply.</div>
         </div>
         <button className="btn ghost" onClick={load}>Refresh</button>
       </div>
 
       <div className="card" style={{ marginBottom: 16, maxHeight: 420, overflowY: "auto" }}>
-        {messages.length === 0 && <div className="empty-note">No messages yet — say hello!</div>}
+        {messages.length === 0 && <div className="empty-note">No messages yet - say hello!</div>}
         {messages.map((m) => (
           <div key={m.id} style={{ marginBottom: 14, textAlign: m.fromCustomer ? "right" : "left" }}>
             <div

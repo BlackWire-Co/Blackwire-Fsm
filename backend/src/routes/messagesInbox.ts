@@ -7,7 +7,7 @@ const router = Router();
 router.use(requireAuth, requireRole(UserRole.ADMIN, UserRole.OFFICE));
 
 // One row per customer who has at least one message, most recent first,
-// with an unread count — an inbox view rather than having to open every
+// with an unread count - an inbox view rather than having to open every
 // customer individually to check for new messages.
 router.get("/", async (_req, res) => {
   const customers = await prisma.customer.findMany({

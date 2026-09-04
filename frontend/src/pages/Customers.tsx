@@ -136,9 +136,9 @@ export default function Customers() {
                   <Link to={`/customers/${c.id}`}>{c.firstName} {c.lastName}</Link>
                   {c.companyName && <div style={{ fontSize: 12, color: "var(--muted)" }}>{c.companyName}</div>}
                 </td>
-                <td>{c.phone || "—"}</td>
-                <td>{c.email || "—"}</td>
-                <td>{c.properties?.map((p: any) => p.label).join(", ") || "—"}</td>
+                <td>{c.phone || "-"}</td>
+                <td>{c.email || "-"}</td>
+                <td>{c.properties?.map((p: any) => p.label).join(", ") || "-"}</td>
               </tr>
             ))}
             {customers.length === 0 && (
