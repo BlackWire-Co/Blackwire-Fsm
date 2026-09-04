@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { usePortalAuth } from "./PortalAuthContext";
-import ThemeToggle from "../components/ThemeToggle";
 
 const NAV = [
   { to: "/portal", label: "Appointments", end: true },
@@ -43,7 +42,6 @@ export default function PortalLayout() {
         </nav>
         <div className="sidebar-footer">
           <div>{customer?.firstName} {customer?.lastName}</div>
-          <ThemeToggle />
           <button className="btn ghost" style={{ width: "100%", marginTop: 8 }} onClick={logout}>
             Log out
           </button>

@@ -52,7 +52,7 @@ export default function Reports() {
         </div>
         <div className="card">
           <h3>Overdue</h3>
-          <div className="stat-value" style={{ color: data.invoices.overdueCount > 0 ? "var(--red)" : undefined }}>
+          <div className="stat-value" style={data.invoices.overdueCount > 0 ? { color: "var(--yellow)", textShadow: "0 0 16px rgba(242,255,92,0.45)" } : undefined}>
             ${data.invoices.overdueTotal.toFixed(2)}
           </div>
           <div className="who">{data.invoices.overdueCount} invoices past due</div>
@@ -81,11 +81,11 @@ export default function Reports() {
           <h3>Estimates: Won / Lost</h3>
           <div style={{ display: "flex", gap: 24, marginBottom: 10 }}>
             <div>
-              <div className="stat-value" style={{ color: "var(--green)" }}>{data.estimates.approved}</div>
+              <div className="stat-value">{data.estimates.approved}</div>
               <div className="who">Approved</div>
             </div>
             <div>
-              <div className="stat-value" style={{ color: "var(--red)" }}>{data.estimates.declined}</div>
+              <div className="stat-value" style={{ color: "var(--yellow)", textShadow: "0 0 16px rgba(242,255,92,0.45)" }}>{data.estimates.declined}</div>
               <div className="who">Declined</div>
             </div>
             {data.estimates.winRate !== null && (

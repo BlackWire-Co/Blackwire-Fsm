@@ -51,8 +51,9 @@ export default function CustomerMessages() {
                 maxWidth: "75%",
                 padding: "10px 14px",
                 borderRadius: 10,
-                background: m.fromCustomer ? "var(--surface-2)" : "var(--violet)",
-                color: m.fromCustomer ? "var(--ink)" : "#fff",
+                border: m.fromCustomer ? "1px solid var(--line)" : "1px solid rgba(47,233,255,0.35)",
+                background: m.fromCustomer ? "var(--surface-2)" : "var(--cyan-wash)",
+                color: m.fromCustomer ? "var(--ink)" : "var(--cyan)",
                 textAlign: "left",
               }}
             >

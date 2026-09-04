@@ -186,7 +186,7 @@ export default function CustomerDetail() {
         </div>
       </div>
       {customer.status === "ARCHIVED" && (
-        <div className="card" style={{ marginBottom: 16, borderColor: "var(--red)" }}>
+        <div className="card" style={{ marginBottom: 16, borderColor: "var(--yellow)" }}>
           This customer is archived. Their history is preserved but they're hidden from the default customer list.
         </div>
       )}

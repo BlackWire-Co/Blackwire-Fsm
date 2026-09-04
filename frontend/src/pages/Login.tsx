@@ -29,7 +29,7 @@ export default function Login() {
       <div className="login-card">
         <span className="tag">BlackWire FSM</span>
         <h1>Sign in</h1>
-        <p style={{ color: "#6b7178", fontSize: 13, marginBottom: 20 }}>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 20 }}>
           Use the office or technician account your admin set up for you.
         </p>
         <form onSubmit={onSubmit}>

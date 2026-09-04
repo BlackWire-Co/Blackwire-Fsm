@@ -46,8 +46,9 @@ export default function PortalMessages() {
                 maxWidth: "75%",
                 padding: "10px 14px",
                 borderRadius: 10,
-                background: m.fromCustomer ? "var(--violet)" : "var(--surface-2)",
-                color: m.fromCustomer ? "#fff" : "var(--ink)",
+                border: m.fromCustomer ? "1px solid rgba(47,233,255,0.35)" : "1px solid var(--line)",
+                background: m.fromCustomer ? "var(--cyan-wash)" : "var(--surface-2)",
+                color: m.fromCustomer ? "var(--cyan)" : "var(--ink)",
                 textAlign: "left",
               }}
             >

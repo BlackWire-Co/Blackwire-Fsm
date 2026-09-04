@@ -35,7 +35,7 @@ export default function PortalAcceptInvite() {
       <div className="login-shell">
         <div className="login-card">
           <h1>Missing invite link</h1>
-          <p style={{ color: "#8b899a", fontSize: 13 }}>This page needs an invite link from your email - please use the link we sent you.</p>
+          <p style={{ color: "var(--muted)", fontSize: 13 }}>This page needs an invite link from your email - please use the link we sent you.</p>
         </div>
       </div>
     );
@@ -46,7 +46,7 @@ export default function PortalAcceptInvite() {
       <div className="login-card">
         <span className="tag">BlackWire FSM</span>
         <h1>Set up your account</h1>
-        <p style={{ color: "#8b899a", fontSize: 13, marginBottom: 20 }}>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 20 }}>
           Choose a password to finish setting up your customer portal access.
         </p>
         <form onSubmit={onSubmit}>

@@ -148,7 +148,7 @@ export default function Settings() {
         </div>
 
         <button className="btn primary" type="submit" disabled={saving}>{saving ? "Saving…" : "Save Settings"}</button>
-        {saved && <span className="who" style={{ marginLeft: 12, color: "var(--green)" }}>Saved.</span>}
+        {saved && <span className="who" style={{ marginLeft: 12, color: "var(--cyan)" }}>Saved.</span>}
       </form>
     </div>
   );

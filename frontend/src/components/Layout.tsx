@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import { loadCustomCss } from "../customCss";
-import ThemeToggle from "./ThemeToggle";
 
 // Grouped instead of one flat 13-item list, so the sidebar reads as
 // "where would this be" (Field Ops / Money / Admin) rather than a wall of
@@ -41,10 +40,17 @@ const NAV_GROUPS = [
   },
 ];
 
+interface TickerStats {
+  jobsToday: number;
+  needsAttention: number;
+  techsActive: number;
+}
+
 export default function Layout() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
+  const [stats, setStats] = useState<TickerStats | null>(null);
 
   const groups = NAV_GROUPS.map((group) => ({
     ...group,
@@ -60,6 +66,27 @@ export default function Layout() {
   // immediately on save, so a change is visible without a reload).
   useEffect(() => { loadCustomCss(api); }, []);
 
+  // Powers the HUD status ticker above the page content. Best-effort: if it
+  // fails (offline, brand-new install with no data yet) the ticker just
+  // shows the static "system online" readout and skips the counts.
+  useEffect(() => {
+    api("/dashboard")
+      .then((data: any) => {
+        const techIds = new Set<string>();
+        (data.todaysJobs || []).forEach((job: any) => {
+          (job.technicians || []).forEach((t: any) => techIds.add(t.userId));
+        });
+        setStats({
+          jobsToday: (data.todaysJobs || []).length,
+          needsAttention: (data.needsAttention || []).length,
+          techsActive: techIds.size,
+        });
+      })
+      .catch(() => setStats(null));
+  }, []);
+
+  const today = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "2-digit" }).toUpperCase();
+
   return (
     <div className="app-shell">
       <div className="mobile-topbar">
@@ -73,8 +100,7 @@ export default function Layout() {
 
       <aside className={"sidebar" + (navOpen ? " open" : "")}>
         <div className="sidebar-brand">
-          BlackWire
-          <span className="tag">FSM</span>
+          BlackWire<span className="tag">FSM</span>
         </div>
         <nav>
           {groups.map((group) => (
@@ -96,13 +122,31 @@ export default function Layout() {
         <div className="sidebar-footer">
           <div>{user?.firstName} {user?.lastName}</div>
           <div style={{ opacity: 0.7, marginBottom: 10 }}>{user?.roles.join(" · ")}</div>
-          <ThemeToggle />
-          <button className="btn ghost" style={{ width: "100%", marginTop: 8 }} onClick={logout}>
+          <button className="btn ghost" style={{ width: "100%" }} onClick={logout}>
             Log out
           </button>
         </div>
       </aside>
       <main className="main">
+        <div className="hud-ticker">
+          <div className="hud-ticker-item bright"><span className="hud-dot"></span>Welcome{user?.firstName ? `, ${user.firstName}` : ""}</div>
+          <div className="hud-sep"></div>
+          <div className="hud-ticker-item">{today}</div>
+          {stats && (
+            <>
+              <div className="hud-sep"></div>
+              <div className="hud-ticker-item">{stats.techsActive} Tech{stats.techsActive === 1 ? "" : "s"} Active</div>
+              <div className="hud-sep"></div>
+              <div className="hud-ticker-item">{stats.jobsToday} Job{stats.jobsToday === 1 ? "" : "s"} Today</div>
+              {stats.needsAttention > 0 && (
+                <>
+                  <div className="hud-sep"></div>
+                  <div className="hud-ticker-item"><span className="hud-dot warn"></span>{stats.needsAttention} Needs Attention</div>
+                </>
+              )}
+            </>
+          )}
+        </div>
         <Outlet />
       </main>
     </div>

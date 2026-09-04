@@ -29,7 +29,7 @@ export default function PortalLogin() {
       <div className="login-card">
         <span className="tag">BlackWire FSM</span>
         <h1>Your Account</h1>
-        <p style={{ color: "#8b899a", fontSize: 13, marginBottom: 20 }}>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 20 }}>
           Sign in to view your appointments, estimates, and invoices.
         </p>
         <form onSubmit={onSubmit}>
