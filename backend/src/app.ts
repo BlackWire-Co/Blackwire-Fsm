@@ -36,6 +36,16 @@ import { startScheduler } from "./lib/scheduler";
 export function createApp() {
   const app = express();
 
+  // Trust exactly one hop of reverse proxy (Nginx Proxy Manager, Caddy,
+  // Traefik, Cloudflare Tunnel, etc.) in front of this container. Without
+  // this, Express ignores X-Forwarded-For and every request's req.ip
+  // resolves to the proxy's own address - which means express-rate-limit
+  // (below, and in the booking router) buckets every real visitor together
+  // under that one IP instead of limiting each visitor individually. Bump
+  // this to a higher number only if there's more than one proxy hop between
+  // the internet and this container.
+  app.set("trust proxy", 1);
+
   app.use(helmet());
   app.use(
     cors({

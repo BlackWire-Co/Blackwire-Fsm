@@ -416,7 +416,18 @@ table.data tr:hover td { background: rgba(47, 233, 255, 0.04); }
 
 .jobnum { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
 
-.search-input, input[type=text], input[type=email], input[type=password], input[type=date], input[type=datetime-local], input[type=number], select, textarea {
+/* Targets plain `input` (not just input[type=text]) since a handful of
+   fields - the public booking form's name/address/zip inputs among them -
+   never got an explicit type="text" attribute in the JSX. Without this,
+   those specific inputs fell through unstyled (no width: 100%, no
+   box-sizing help beyond the global reset) and used the browser's raw
+   default text-input width instead, which is wider than a narrow grid
+   column (e.g. the 3-up city/state/zip row) can hold - hence ZIP visibly
+   overflowing its container. Excluding checkbox/radio/range/color/file so
+   this doesn't fight their native sizing. */
+.search-input,
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),
+select, textarea {
   font-family: inherit;
   font-size: 14px;
   padding: 8px 10px;

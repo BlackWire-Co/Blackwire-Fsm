@@ -153,7 +153,7 @@ contractors.
 - **Customer matching**: an online booking matches an existing customer by email
   or phone before creating a new one, same as the CSV importer - no duplicate
   customer records for a repeat visitor.
-- **Minimum-notice slots are shown**: a time inside the configured
+- **Minimum-notice slots are shown, not hidden**: a time inside the configured
   notice window still appears on the picker, crossed out and unclickable, so a
   customer can see the shop was open then rather than wondering why a time is
   just missing.
@@ -277,7 +277,7 @@ the app itself.
   (async () => {
     const passwordHash = await bcrypt.hash('YourStrongPassword!', 12);
     await prisma.user.create({
-      data: { email: 'you@example.com', passwordHash, firstName: 'You', lastName: 'Admin', role: 'ADMIN' }
+      data: { email: 'you@example.com', passwordHash, firstName: 'You', lastName: 'Admin', roles: ['ADMIN'] }
     });
     console.log('Admin created.');
   })();
@@ -430,7 +430,15 @@ Configure SMTP (see above) so booking confirmation emails actually send to both
 the customer and your company email (Settings → company email) - without it,
 bookings still go through and land on the schedule, they just won't email anyone.
 
-
+**A note on capacity**: there's no hard cap on how many customers can be looking
+at or submitting the booking page at once - it's ordinary API traffic like the
+rest of the app. Two safety limits exist specifically for this public, unauthenticated
+page: read-only lookups (checking services/providers/available times) are capped at
+120 requests per 5 minutes per visitor, and actual booking submissions at 20 per 15
+minutes per visitor - generous for a real customer, tight enough to blunt scripted
+abuse. Two people can never accidentally book the exact same provider at the exact
+same time; whoever's request lands first wins, the other gets a clear "that time
+was just taken" and picks again.
 
 **Cancelling a job reopens its time**: setting a job's status to Cancelled removes
 it from that provider's booked time immediately - the next availability check
