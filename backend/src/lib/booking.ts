@@ -107,7 +107,7 @@ async function computeProviderSlots(
   service: ServiceLike,
   dateStr: string,
   settings: BookingSettingsLike
-): Promise<{ start: Date; end: Date }[]> {
+): Promise<{ start: Date; end: Date; blocked: boolean }[]> {
   const tz = settings.timezone;
   const parts = dateStr.split("-").map(Number);
   const [y, m, d] = parts;
