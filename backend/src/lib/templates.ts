@@ -68,8 +68,8 @@ export const DEFAULT_TEMPLATES = [
     key: "BOOKING_NOTIFICATION_ADMIN",
     name: "New Online Booking (Admin)",
     subject: "New online booking: {{jobTitle}} - {{scheduledDate}}",
-    bodyHtml: `<p>A new online booking just came in:</p><ul><li><strong>Customer:</strong> {{customerName}} ({{customerPhone}} / {{customerEmail}})</li><li><strong>Service:</strong> {{jobTitle}} ({{servicePrice}})</li><li><strong>Date:</strong> {{scheduledDate}}</li><li><strong>Arrival window:</strong> {{arrivalWindow}}</li><li><strong>Address:</strong> {{address}}</li><li><strong>Assigned to:</strong> {{providerName}}</li></ul><p>It's already on the schedule as confirmed - no action needed unless something needs to change.</p>`,
-    bodyText: "New online booking: {{customerName}} booked {{jobTitle}} ({{servicePrice}}) for {{scheduledDate}}, assigned to {{providerName}}. Address: {{address}}.",
+    bodyHtml: `<p>A new online booking just came in:</p><ul><li><strong>Customer:</strong> {{customerName}} ({{customerPhone}} / {{customerEmail}})</li><li><strong>Service:</strong> {{jobTitle}} ({{servicePrice}})</li><li><strong>Date:</strong> {{scheduledDate}}</li><li><strong>Arrival window:</strong> {{arrivalWindow}}</li><li><strong>Address:</strong> {{address}}</li><li><strong>Assigned to:</strong> {{providerName}}</li><li><strong>Customer notes:</strong> {{customerNotes}}</li></ul><p>It's already on the schedule as confirmed - no action needed unless something needs to change.</p>`,
+    bodyText: "New online booking: {{customerName}} booked {{jobTitle}} ({{servicePrice}}) for {{scheduledDate}}, assigned to {{providerName}}. Address: {{address}}. Notes: {{customerNotes}}",
   },
 ];
 

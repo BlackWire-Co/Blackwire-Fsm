@@ -212,6 +212,12 @@ export default function JobDetail() {
         <div className="card">
           <h3>Job Details</h3>
           <p>{job.description || "No description provided."}</p>
+          {job.problemRequest && (
+            <p className="card" style={{ background: "var(--surface-2)", marginTop: 8, marginBottom: 8 }}>
+              <span className="who">Customer notes</span><br />
+              {job.problemRequest}
+            </p>
+          )}
           <p className="who">
             Scheduled: {scheduledLabel}
           </p>

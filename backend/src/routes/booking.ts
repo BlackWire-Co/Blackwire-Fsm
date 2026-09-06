@@ -239,6 +239,13 @@ router.post("/", writeLimiter, async (req, res) => {
     arrivalWindow,
     providerName,
     confirmationNote: settings.confirmationNote || "",
+    // Whatever the customer typed in the "notes" field of the booking form -
+    // saved on the job as problemRequest, but not surfaced anywhere until
+    // now: neither email template referenced it, so it silently never
+    // reached anyone. Only wired into the admin notification below (the
+    // customer already knows what they wrote); "None provided" instead of
+    // blank so the line reads cleanly either way.
+    customerNotes: data.notes || "None provided",
   };
 
   await notifyCustomer({
