@@ -36,6 +36,7 @@ const NAV_GROUPS = [
       { to: "/settings/users", label: "Users", roles: ["ADMIN"] },
       { to: "/settings/templates", label: "Email Templates", roles: ["ADMIN"] },
       { to: "/settings/notification-log", label: "Notification Log", roles: ["ADMIN"] },
+      { to: "/settings/booking", label: "Online Booking", roles: ["ADMIN"] },
     ],
   },
 ];

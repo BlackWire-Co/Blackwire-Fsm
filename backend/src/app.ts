@@ -25,9 +25,12 @@ import messagesInboxRoutes from "./routes/messagesInbox";
 import settingsRoutes from "./routes/settings";
 import themeRoutes from "./routes/theme";
 import reportsRoutes from "./routes/reports";
+import bookingAdminRoutes from "./routes/bookingAdmin";
+import bookingRoutes from "./routes/booking";
 import { ensureBucket } from "./lib/storage";
 import { ensureDefaultTemplates } from "./lib/templates";
 import { ensureSettings } from "./lib/settings";
+import { ensureBookingSettings } from "./lib/booking";
 import { startScheduler } from "./lib/scheduler";
 
 export function createApp() {
@@ -77,10 +80,13 @@ export function createApp() {
   app.use("/api/portal/auth", portalAuthRoutes);
   app.use("/api/portal", portalRoutes);
   app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/booking-admin", bookingAdminRoutes);
+  app.use("/api/booking", bookingRoutes);
 
   ensureBucket().catch((err) => console.error("Could not ensure MinIO bucket exists:", err.message));
   ensureDefaultTemplates().catch((err) => console.error("Could not seed default email templates:", err.message));
   ensureSettings().catch((err) => console.error("Could not seed default settings:", err.message));
+  ensureBookingSettings().catch((err) => console.error("Could not seed default booking settings:", err.message));
   startScheduler();
 
   // Consistent error shape for anything that throws past a route handler.

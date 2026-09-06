@@ -57,6 +57,20 @@ export const DEFAULT_TEMPLATES = [
     bodyHtml: `<p>Hi {{customerName}},</p><p>You can now view your appointments, estimates, and invoices online. <a href="{{portalUrl}}">Click here to set up your account</a> (this link expires in 48 hours).</p><p>- {{companyName}}</p>`,
     bodyText: "Set up your customer portal account: {{portalUrl}} (expires in 48 hours). - {{companyName}}",
   },
+  {
+    key: "BOOKING_CONFIRMATION",
+    name: "Online Booking Confirmation",
+    subject: "You're booked: {{jobTitle}} - {{companyName}}",
+    bodyHtml: `<p>Hi {{customerName}},</p><p>Thanks for booking online! Here's what we've got scheduled:</p><ul><li><strong>Service:</strong> {{jobTitle}} ({{servicePrice}})</li><li><strong>Date:</strong> {{scheduledDate}}</li><li><strong>Arrival window:</strong> {{arrivalWindow}}</li><li><strong>Address:</strong> {{address}}</li><li><strong>Technician:</strong> {{providerName}}</li></ul><p>{{confirmationNote}}</p><p>If you need to reschedule, just reply to this email or give us a call.</p><p>- {{companyName}}</p>`,
+    bodyText: "You're booked for {{jobTitle}} ({{servicePrice}}) on {{scheduledDate}}, arrival window {{arrivalWindow}}, at {{address}} with {{providerName}}. {{confirmationNote}} - {{companyName}}",
+  },
+  {
+    key: "BOOKING_NOTIFICATION_ADMIN",
+    name: "New Online Booking (Admin)",
+    subject: "New online booking: {{jobTitle}} - {{scheduledDate}}",
+    bodyHtml: `<p>A new online booking just came in:</p><ul><li><strong>Customer:</strong> {{customerName}} ({{customerPhone}} / {{customerEmail}})</li><li><strong>Service:</strong> {{jobTitle}} ({{servicePrice}})</li><li><strong>Date:</strong> {{scheduledDate}}</li><li><strong>Arrival window:</strong> {{arrivalWindow}}</li><li><strong>Address:</strong> {{address}}</li><li><strong>Assigned to:</strong> {{providerName}}</li></ul><p>It's already on the schedule as confirmed - no action needed unless something needs to change.</p>`,
+    bodyText: "New online booking: {{customerName}} booked {{jobTitle}} ({{servicePrice}}) for {{scheduledDate}}, assigned to {{providerName}}. Address: {{address}}.",
+  },
 ];
 
 // Upserts default templates by key on every boot. Existing edits (matched

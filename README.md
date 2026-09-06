@@ -5,6 +5,8 @@
 A self-hosted field service management app for small electrical/HVAC/plumbing/handyman
 contractors.
 
+<img src="fsm-screenshots/company-facing/Dashboard.png" alt="Dashboard" width="800">
+
 ## What's included
 
 **(Core)**
@@ -101,11 +103,17 @@ contractors.
 - **Appointments**: customers see upcoming and past service at their properties -
   status, scheduled time, assigned technician, and any customer-visible notes.
   Internal notes, material costs, and labor rates are never exposed.
+<img src="fsm-screenshots/customer-portal/appointments.png" alt="appointments" width="800">
+  
 - **Estimates**: customers can view and self-approve or decline (typing their name
   counts as an electronic signature, IP-logged) - the same approval path staff use
   internally, so approvals are consistent either way. PDF download included.
+<img src="fsm-screenshots/customer-portal/estimates.png" alt="estimates" width="800">
+  
 - **Invoices**: customers see balance due and payment history, with PDF download
   (including any signature captured on the job, same as the staff view).
+<img src="fsm-screenshots/customer-portal/invoices.png" alt="invoices" width="800">
+  
 - **"Pay Invoice"**: with no payment processor configured (the default -
   `PAYMENT_PROVIDER=none`), clicking Pay never fakes a charge. It tells the customer
   online payment isn't set up yet and drops a message in the office inbox so a human
@@ -114,12 +122,46 @@ contractors.
 - **Messages**: a simple two-way thread per customer. Customers message from the
   portal; staff see every conversation in a new **Messages** inbox (unread counts,
   most recent first) and reply from the customer's page.
+  <img src="fsm-screenshots/customer-portal/messages.png" alt="messages" width="800">
 - **Document/photo upload**: customers can upload files (e.g. something office asked
   for) straight to MinIO from the portal. Staff view them from the customer's page
   ("Documents" link) read-only gallery with download links.
+ <img src="fsm-screenshots/customer-portal/documents.png" alt="Documents" width="800">
+  
 - **Message threads refresh automatically** (polling every 10–15s) on both the portal
   and staff sides, with a note that replies work like email rather than instant chat 
   no more needing a manual page reload to see a new message.
+
+**(Public Online Booking)**
+- **Customer-facing booking page** at `/book` - no login required. A visitor picks a
+  service (with price and duration shown), picks a specific provider or "Any
+  Available," picks an open time slot, leaves their contact info, and lands
+  straight on the schedule as a confirmed job - there's no pending/approval queue.
+- **Admin configuration** (Settings → Online Booking, admin only): a master on/off
+  switch, business time zone, arrival-window display text, buffer time between
+  jobs, minimum booking notice and how far out customers can book, slot interval,
+  which fields are required (address/phone/email/notes), and a free-text
+  confirmation note shown on the confirmation screen and email.
+- **Service catalog**: add/edit/hide services with name, description, price, and
+  duration - shown to customers exactly as configured.
+- **Providers**: flag any active user as bookable and give them their own weekly
+  availability, recurring breaks, and one-off blocked time (vacation, a sick day,
+  or a company-wide holiday) - each provider's calendar is independent.
+- **Confirmation emails**: both the customer and the shop's company email (from
+  Settings) get an email when a booking comes in, including the service, price,
+  date, arrival window, address, and assigned technician.
+- **Customer matching**: an online booking matches an existing customer by email
+  or phone before creating a new one, same as the CSV importer - no duplicate
+  customer records for a repeat visitor.
+- **Minimum-notice slots are shown**: a time inside the configured
+  notice window still appears on the picker, crossed out and unclickable, so a
+  customer can see the shop was open then rather than wondering why a time is
+  just missing.
+- **Double-booking protection**: two customers requesting the exact same slot at
+  the same instant can't both win it - the booking write locks the chosen
+  provider for the moment it takes to re-check and create the job, so the loser
+  of the race gets a clean "that time was just taken" instead of an actual double
+  booking.
 
 **(Settings, Reports, Recurring Jobs, Light/Dark Mode)**
 - **Settings page** (admin only): company name/address/phone/email, default labor rate,
@@ -139,7 +181,7 @@ contractors.
   the earlier feedback that notifications should be opt-in) to auto-send the
   appointment reminder template a configurable number of hours before each job 
   handled by the same scheduler.
-- **Light/dark mode**: a toggle in the sidebar (both staff app and customer portal)
+- **Light/dark mode**: (--UPDATE: temporarily disabled ) a toggle in the sidebar (both staff app and customer portal)
   switches themes instantly and remembers your choice. Defaults to dark to match the
   BlackWire brand.
 
@@ -306,7 +348,10 @@ backend/          Node + TypeScript + Express + Prisma API
                               materials, timeEntries, photos, signatures,
                               estimates, invoices, payments, pricebook,
                               emailTemplates, notificationLog, portalAuth,
-                              portal, messagesInbox, settings, reports
+                              portal, messagesInbox, settings, reports,
+                              bookingAdmin (admin config), booking (public)
+  src/lib/booking.ts         Public booking: settings singleton, timezone-aware
+                              per-provider slot computation, public slot lookup
   src/lib/storage.ts         MinIO/S3 client for photo uploads (internal + public endpoints)
   src/lib/pdf.ts             Estimate/invoice PDF generation (pdfkit), incl. signatures
   src/lib/money.ts           Shared subtotal/tax/discount/total math
@@ -325,7 +370,8 @@ frontend/         React + TypeScript + Vite
                               JobDetail, Schedule, Users, Estimates, EstimateDetail,
                               Invoices, InvoiceDetail, Pricebook, EmailTemplates,
                               NotificationLog, MessagesInbox, CustomerMessages,
-                              CustomerDocuments, Settings, Reports
+                              CustomerDocuments, Settings, Reports, BookingAdmin
+                              (admin config), PublicBooking (the public /book page)
   src/theme.ts                Light/dark theme persistence (localStorage + data-theme attr)
   src/components/ThemeToggle.tsx  Shared toggle used in both staff and portal sidebars
   src/portal/                Customer-facing portal app: its own API client, auth
@@ -365,6 +411,31 @@ is usually specific enough to fix (bad credentials, wrong port, etc.).
 **Payments**: `PAYMENT_PROVIDER=none` by default  the portal's Pay button notifies
 the office instead of processing a real charge. See Phase 5 notes above for wiring in
 a real processor later.
+
+## Setting up public online booking
+
+1. Log in as admin and go to **Settings → Online Booking**.
+2. Under **Services**, add at least one bookable service (name, price, duration).
+3. Under **Providers**, flag at least one active user as bookable, then click
+   "Edit schedule" to give them weekly availability (e.g. Mon-Fri 9-5). A provider
+   with no hours set simply never shows any open slots.
+4. Set your scheduling rules under **General Settings**: time zone, buffer between
+   jobs, minimum notice (how last-minute a booking can be), how far out customers
+   can book, and which contact fields are required.
+5. Check the **"Online booking page is live"** box and save.
+6. Share `http://<your-domain-or-LAN-IP>:8080/book` with customers, or link to it
+   from your website.
+
+Configure SMTP (see above) so booking confirmation emails actually send to both
+the customer and your company email (Settings → company email) - without it,
+bookings still go through and land on the schedule, they just won't email anyone.
+
+
+
+**Cancelling a job reopens its time**: setting a job's status to Cancelled removes
+it from that provider's booked time immediately - the next availability check
+(by a customer, or by you reloading the booking page) will show that slot open
+again. Nothing needs to be manually cleared.
 
 ## Fixed / added 
 

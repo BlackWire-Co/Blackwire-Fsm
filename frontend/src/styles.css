@@ -536,3 +536,114 @@ select:hover:not(:disabled) {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 14px;
 }
+
+/* Public online booking page - standalone, no sidebar. Same glow treatment
+   as .login-shell but sized for a multi-step form instead of a narrow
+   login card. */
+.booking-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 20%, var(--login-glow) 0%, var(--bg) 60%);
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+.booking-shell::before {
+  content: "";
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--cyan-soft) 0%, rgba(47, 233, 255, 0) 70%);
+  top: -180px;
+  left: -160px;
+  pointer-events: none;
+}
+.booking-card {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 32px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 0 0 1px rgba(47, 233, 255, 0.12), 0 0 32px rgba(47, 233, 255, 0.08), 0 20px 40px rgba(0,0,0,0.45);
+}
+.booking-card .tag {
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: block;
+}
+.booking-card h1 { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin: 0 0 18px; color: var(--ink); }
+
+.booking-steps { display: flex; gap: 8px; margin-bottom: 20px; }
+.booking-step {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.booking-step.active { color: var(--bg); background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 8px var(--cyan-soft); }
+.booking-step.done { color: var(--cyan); border-color: rgba(47, 233, 255, 0.4); }
+
+.booking-option-list { display: flex; flex-direction: column; gap: 8px; }
+.booking-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+.booking-option:hover { border-color: var(--cyan); background: var(--cyan-wash); }
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+.slot-btn {
+  padding: 10px 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+.slot-btn:hover { border-color: var(--cyan); }
+.slot-btn.selected { background: var(--cyan); color: var(--bg); border-color: var(--cyan); font-weight: 700; box-shadow: 0 0 8px var(--cyan-soft); }
+/* Genuinely open time-wise, just inside the minimum-notice window - shown
+   crossed-out and unclickable rather than silently missing, so it's clear
+   the shop was open then, it's just too soon to grab it. */
+.slot-btn.blocked {
+  color: var(--muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.slot-btn.blocked:hover { border-color: var(--line); }

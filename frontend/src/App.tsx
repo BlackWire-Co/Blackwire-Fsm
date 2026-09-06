@@ -21,6 +21,8 @@ import MessagesInbox from "./pages/MessagesInbox";
 import CustomerMessages from "./pages/CustomerMessages";
 import CustomerDocuments from "./pages/CustomerDocuments";
 import Settings from "./pages/Settings";
+import BookingAdmin from "./pages/BookingAdmin";
+import PublicBooking from "./pages/PublicBooking";
 import Reports from "./pages/Reports";
 import PortalLayout from "./portal/PortalLayout";
 import PortalLogin from "./portal/PortalLogin";
@@ -77,8 +79,11 @@ export default function App() {
         <Route path="pricebook" element={<Pricebook />} />
         <Route path="settings/templates" element={<EmailTemplates />} />
         <Route path="settings/notification-log" element={<NotificationLog />} />
+        <Route path="settings/booking" element={<BookingAdmin />} />
         <Route path="messages" element={<MessagesInbox />} />
       </Route>
+
+      <Route path="/book" element={<PublicBooking />} />
 
       <Route path="/portal/login" element={<PortalLogin />} />
       <Route path="/portal/accept-invite" element={<PortalAcceptInvite />} />

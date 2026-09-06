@@ -2,6 +2,7 @@ import { prisma } from "./prisma";
 import { sendMail } from "./mailer";
 import { getSmsProvider } from "./sms";
 import { renderTemplate } from "./templates";
+import { getSettings } from "./settings";
 
 interface NotifyCustomer {
   email?: string | null;
@@ -77,5 +78,50 @@ export async function notifyCustomer(params: {
     }
   } catch (err: any) {
     console.error(`notifyCustomer(${params.templateKey}) failed:`, err.message);
+  }
+}
+
+/**
+ * Sends a templated notification to the shop itself (the company email on
+ * file in Settings) rather than a customer - used for things like "a new
+ * online booking just came in". Silently does nothing if no company email
+ * is configured yet, and - like notifyCustomer - never throws.
+ */
+export async function notifyAdmin(params: {
+  templateKey: string;
+  variables: Record<string, string>;
+  relatedType?: string;
+  relatedId?: string;
+}) {
+  try {
+    const settings = await getSettings();
+    if (!settings.companyEmail) return;
+
+    const template = await prisma.emailTemplate.findUnique({ where: { key: params.templateKey } });
+    if (!template) return;
+
+    const vars = {
+      companyName: settings.companyName || process.env.COMPANY_NAME || "Your Company",
+      ...params.variables,
+    };
+    const subject = renderTemplate(template.subject, vars);
+    const html = renderTemplate(template.bodyHtml, vars);
+
+    const result = await sendMail({ to: settings.companyEmail, subject, html });
+    await prisma.notificationLog.create({
+      data: {
+        channel: "EMAIL",
+        templateKey: params.templateKey,
+        recipient: settings.companyEmail,
+        subject,
+        body: html,
+        status: result.ok ? "SENT" : "SKIPPED",
+        error: result.error,
+        relatedType: params.relatedType,
+        relatedId: params.relatedId,
+      },
+    });
+  } catch (err: any) {
+    console.error(`notifyAdmin(${params.templateKey}) failed:`, err.message);
   }
 }

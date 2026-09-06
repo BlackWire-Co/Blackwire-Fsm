@@ -62,6 +62,7 @@ model User {
   assignedJobs JobTechnician[]
   auditLogs    AuditLog[]
   timeEntries  TimeEntry[]
+  bookingProvider BookingProvider?
 
   @@map("users")
 }
@@ -199,24 +200,33 @@ model Job {
   recurrenceInterval  RecurrenceInterval @default(NONE)
   nextRecurrenceDate  DateTime?
   reminderSentAt      DateTime?
+  // Set when this job was created through the public booking page rather
+  // than by staff. bookedServiceId/bookedPrice snapshot what the customer
+  // picked and was quoted at booking time, so the record stays accurate
+  // even if the service catalog changes later.
+  source              String?
+  bookedServiceId     String?
+  bookedPrice         Decimal?    @db.Decimal(10, 2)
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
 
-  customer     Customer        @relation(fields: [customerId], references: [id])
-  property     Property        @relation(fields: [propertyId], references: [id])
-  technicians  JobTechnician[]
-  photos       JobPhoto[]
-  materials    JobMaterial[]
-  timeEntries  TimeEntry[]
+  customer      Customer        @relation(fields: [customerId], references: [id])
+  property      Property        @relation(fields: [propertyId], references: [id])
+  technicians   JobTechnician[]
+  photos        JobPhoto[]
+  materials     JobMaterial[]
+  timeEntries   TimeEntry[]
   statusHistory JobStatusHistory[]
-  signatures   Signature[]
-  estimates    Estimate[]
-  invoices     Invoice[]
+  signatures    Signature[]
+  estimates     Estimate[]
+  invoices      Invoice[]
+  bookedService BookingService? @relation(fields: [bookedServiceId], references: [id])
 
   @@index([customerId])
   @@index([propertyId])
   @@index([status])
   @@index([scheduledDate])
+  @@index([bookedServiceId])
   @@map("jobs")
 }
 
@@ -484,6 +494,133 @@ model PriceBookItem {
 
   @@index([active])
   @@map("price_book_items")
+}
+
+// --- Public online booking ---
+// A customer-facing scheduling page (think Easy!Appointments) layered on
+// top of the existing Job model. Bookings land directly on the schedule as
+// real Jobs (auto-confirmed - there's no separate pending/approval queue by
+// design, at least until per-provider scheduling has been proven out).
+
+model BookingSettings {
+  id               String   @id @default("singleton")
+  // Master switch - the public page 404s (politely) while this is off.
+  enabled          Boolean  @default(false)
+  // IANA zone name (e.g. "America/Los_Angeles"). All slot math happens in
+  // this single business timezone - there's one shop, one clock.
+  timezone         String   @default("America/Los_Angeles")
+  // Purely a courtesy to the customer: the confirmation says "arrival
+  // between 9:00 and 10:00 AM" instead of a single exact time. It does NOT
+  // change how much calendar time a booking actually reserves - that's
+  // still the service's own duration plus bufferMin below - so providers
+  // never end up double-booked because of a wide arrival window.
+  arrivalWindowMin Int      @default(60)
+  // Minimum gap enforced between the end of one booked job and the start
+  // of the next, per provider.
+  bufferMin        Int      @default(30)
+  // Can't book sooner than this many hours from right now...
+  minNoticeHours   Int      @default(24)
+  // ...or further out than this many days.
+  maxAdvanceDays   Int      @default(60)
+  // Granularity slots are offered at (e.g. a slot every 30 minutes).
+  slotIntervalMin  Int      @default(30)
+  requireAddress   Boolean  @default(true)
+  requirePhone     Boolean  @default(true)
+  requireEmail     Boolean  @default(false)
+  requireNotes     Boolean  @default(false)
+  // Optional extra line shown on the booking confirmation screen/email
+  // (cancellation policy, parking instructions, whatever).
+  confirmationNote String?  @db.Text
+  updatedAt        DateTime @updatedAt
+
+  @@map("booking_settings")
+}
+
+model BookingService {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  durationMin Int
+  price       Decimal  @db.Decimal(10, 2)
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookedJobs Job[]
+
+  @@index([active])
+  @@map("booking_services")
+}
+
+// Marks a staff User as bookable online. Deliberately simple for now - any
+// user can be flagged as a provider regardless of role, with one shared
+// availability schedule each. A per-service-per-provider matrix (only some
+// providers offer some services) can layer on top later without a schema
+// change here.
+model BookingProvider {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availability BookingAvailability[]
+  breaks       BookingBreak[]
+  blocks       BookingBlock[]
+
+  @@map("booking_providers")
+}
+
+// A provider's recurring weekly working hours. Multiple rows per day are
+// fine (e.g. 8-12 and 1-5) if it's easier to model a lunch break that way
+// instead of using BookingBreak below.
+model BookingAvailability {
+  id          String @id @default(uuid())
+  providerId  String
+  dayOfWeek   Int    // 0 = Sunday .. 6 = Saturday
+  startMinute Int    // minutes since midnight, business timezone
+  endMinute   Int
+
+  provider BookingProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@map("booking_availability")
+}
+
+// A recurring daily break carved out of a provider's availability (lunch,
+// etc.) - separate from BookingAvailability so admins can add "everyone's
+// out 12-1" without editing every working-hours row.
+model BookingBreak {
+  id          String  @id @default(uuid())
+  providerId  String
+  dayOfWeek   Int?    // null = applies every day
+  startMinute Int
+  endMinute   Int
+  label       String?
+
+  provider BookingProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@map("booking_breaks")
+}
+
+// A one-off block of time a provider (or, when providerId is null, every
+// provider - a company holiday) is unavailable: vacation, a sick day, a
+// half-day, a specific personal appointment.
+model BookingBlock {
+  id         String   @id @default(uuid())
+  providerId String?
+  startAt    DateTime
+  endAt      DateTime
+  label      String?
+  createdAt  DateTime @default(now())
+
+  provider BookingProvider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@index([startAt, endAt])
+  @@map("booking_blocks")
 }
 
 enum NotificationChannel {
