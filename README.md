@@ -6,6 +6,14 @@ A self-hosted field service management app for small electrical/HVAC/plumbing/ha
 contractors.
 
 <img src="fsm-screenshots/company-facing/Dashboard.png" alt="Dashboard" width="800">
+## DEMO
+**(Company Side)**
+https://ab.javaqueen.org/
+Username: admin@example.com
+Password: ChangeMe123!
+Emailing is not set up.
+**(Booking)**
+https://ab.javaqueen.org/book
 
 ## What's included
 
